@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Windfinder Widget – Frohnhof</title>
+  <style>
+    :root{
+      --bg:#f5f7fa;
+      --text:#2b3a67;
+      --title:#2b3a67;
+      --pad:14px;
+      --scale:1;
+      --maxw:1200px;
+      --height:700px; /* Fallback */
+    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:10px}
+    h2{margin:10px 0 8px;color:var(--title);font-weight:600;font-size:clamp(16px,2.2vw,20px);text-align:center}
+    .widget{
+      margin:0 auto;
+      padding:var(--pad);
+      transform: scale(var(--scale));
+      transform-origin: top center;
+      width: calc(100% / var(--scale)); /* Ausgleich für Scaling */
+      min-height: var(--height);
+      box-sizing: border-box;
+      overflow: hidden;
+      background: transparent;
+    }
+    /* Mobile Tuning */
+    @media (max-width: 700px){
+      :root{ --height: 520px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2 id="title">Aktuelles Wetter am Frohnhof</h2>
+    <div class="widget" id="widget"></div>
+    <noscript>
+      <p><a rel="nofollow" href="https://www.windfinder.com/forecast/sinnersdorf_north_rhine_westphalia_germany">Windvorhersage (Sinnersdorf)</a> – bereitgestellt von <a rel="nofollow" href="https://www.windfinder.com">windfinder.com</a></p>
+    </noscript>
+  </div>
+
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      const days = p.get('days') || '1';
+      const show_pressure = p.get('show_pressure') || '0';
+      const show_waves = p.get('show_waves') || '0';
+      const compact = p.get('compact') === '1';
+      const title = p.get('title') || 'Aktuelles Wetter am Frohnhof';
+      const height = p.get('h'); // z.B. 800 oder 70vh
+
+      // Titel setzen
+      document.getElementById('title').textContent = title;
+
+      // Dynamische Höhe/Skalierung setzen
+      const root = document.documentElement;
+      if (height) {
+        const val = /^\d+$/.test(height) ? height + 'px' : height;
+        root.style.setProperty('--height', val);
+      }
+      if (compact) {
+        root.style.setProperty('--scale', '0.9');
+        root.style.setProperty('--pad', '8px');
+      }
+
+      const scriptSrc = "https://www.windfinder.com/widget/forecast/js/sinnersdorf_north_rhine_westphalia_germany"
+        + "?unit_wave=m&unit_rain=mm&unit_temperature=c&unit_wind=kmh&unit_pressure=hPa"
+        + "&days=" + encodeURIComponent(days)
+        + "&show_day=1"
+        + "&show_pressure=" + encodeURIComponent(show_pressure)
+        + "&show_waves=" + encodeURIComponent(show_waves);
+
+      const s = document.createElement('script');
+      s.src = scriptSrc;
+      document.getElementById('widget').appendChild(s);
+    })();
+  </script>
+</body>
+</html>
