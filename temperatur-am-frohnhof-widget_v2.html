@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Temperatur am Frohnhof – Widget</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121a2b;
+      --accent:#6ec1ff;
+      --good:#3bb273;
+      --warn:#ffb020;
+      --bad:#e15554;
+      --text:#e8eef7;
+      --muted:#a7b3c9;
+      --narrow:520px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    .wrap{max-width:var(--narrow);margin:0 auto;padding:16px}
+    .card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+    h2{margin:0 0 12px;font-size:20px;font-weight:800;color:#e9f1ff;text-align:center}
+    .kpi-row{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .label{color:#b9c6dc;font-size:13px}
+    .big-apparent{font-size:56px;font-weight:900;line-height:1;margin:0;text-align:center}
+    .big-actual{font-size:28px;font-weight:700;line-height:1;margin:0;text-align:center}
+    .unit{font-size:16px;color:var(--muted)}
+    .mix{display:flex;align-items:baseline;gap:6px;justify-content:center}
+    .pillrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+    .pill{padding:6px 10px;border-radius:999px;background:#0e1b2e;color:#c8d4eb;font-size:12px}
+    .advice{margin-top:12px;padding:12px 14px;border-radius:12px;background:#0e1b2e;text-align:center}
+    .advice .title{display:inline-flex;align-items:center;gap:8px;justify-content:center;font-size:16px;font-weight:700}
+    .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+    .reason{color:#9ad1ff;font-size:12px;margin-top:6px;line-height:1.4}
+    .trend{margin-top:8px;color:#a7b3c9;font-size:12px;text-align:center}
+    .footer{margin-top:10px;color:#8fa3c3;font-size:11px;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2 id="title">Temperatur am Frohnhof</h2>
+
+      <div class="kpi-row">
+        <div class="label">Gefühlte Pferdetemperatur</div>
+        <div class="mix"><div class="big-apparent" id="ta_cur">--</div><div class="unit">°C</div></div>
+
+        <div class="label" style="margin-top:10px">Aktuelle Temperatur</div>
+        <div class="mix"><div class="big-actual" id="t_cur">--</div><div class="unit">°C</div></div>
+      </div>
+
+      <div class="pillrow">
+        <div class="pill">Heute min: <strong id="t_min">--</strong> °C</div>
+        <div class="pill">Heute max: <strong id="t_max">--</strong> °C</div>
+      </div>
+      <div class="pillrow">
+        <div class="pill">Heute min (gefühlt): <strong id="ta_min">--</strong> °C</div>
+        <div class="pill">Heute max (gefühlt): <strong id="ta_max">--</strong> °C</div>
+      </div>
+      <div class="pillrow">
+        <div class="pill">Regen letzte 24h: <strong id="rain_past">--</strong></div>
+        <div class="pill">Regen nächste 10h: <strong id="rain_next">--</strong></div>
+      </div>
+
+      <div class="advice">
+        <div class="title"><span class="dot" id="dot" style="background:var(--warn)"></span><span id="advice">Lade Daten …</span></div>
+        <div class="reason" id="reason"></div>
+      </div>
+
+      <div class="trend" id="trend"></div>
+
+      <div class="footer">
+        Daten: <a href="https://open-meteo.com/" target="_blank" style="color:#9ad1ff;text-decoration:none">Open‑Meteo</a> · Logik: Frohnhof Winterregeln (Regen ↑ = Decken an; sonst erst aus bei gefühlt > 12 °C)
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const qs = new URLSearchParams(location.search);
+  const lat = parseFloat(qs.get('lat')) || 50.99;     // Köln‑Esch ca.
+  const lon = parseFloat(qs.get('lon')) || 6.88;
+  const tz = qs.get('tz') || 'Europe/Berlin';
+  const title = qs.get('title') || 'Temperatur am Frohnhof';
+  document.getElementById('title').textContent = title;
+
+  const OFF_THRESHOLD = 12; // erst ab >12°C ausziehen
+
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+              `&current=temperature_2m,apparent_temperature,precipitation` +
+              `&hourly=temperature_2m,apparent_temperature,precipitation` +
+              `&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min` +
+              `&timezone=${encodeURIComponent(tz)}&past_days=1`;
+
+  fetch(url, {cache:'no-store'}).then(r=>r.json()).then(data=>{
+    const curT = data?.current?.temperature_2m;
+    const curTA = data?.current?.apparent_temperature;
+    const dTmax = data?.daily?.temperature_2m_max?.[0];
+    const dTmin = data?.daily?.temperature_2m_min?.[0];
+    const dTAmax = data?.daily?.apparent_temperature_max?.[0];
+    const dTAmin = data?.daily?.apparent_temperature_min?.[0];
+
+    const round = v => (v===undefined||v===null||isNaN(v)) ? '--' : Math.round(v);
+
+    // Render KPIs
+    document.getElementById('t_cur').textContent = round(curT);
+    document.getElementById('ta_cur').textContent = round(curTA);
+    document.getElementById('t_max').textContent = round(dTmax);
+    document.getElementById('t_min').textContent = round(dTmin);
+    document.getElementById('ta_max').textContent = round(dTAmax);
+    document.getElementById('ta_min').textContent = round(dTAmin);
+
+    // Regen-Logik: in den letzten 24h oder in den nächsten 10h?
+    const times = data?.hourly?.time || [];
+    const precip = data?.hourly?.precipitation || [];
+    const app = data?.hourly?.apparent_temperature || [];
+    const now = new Date();
+    const nowMs = now.getTime();
+
+    let hadRainPast24 = false;
+    let hasRainNext10 = false;
+
+    for (let i=0; i<times.length; i++){
+      const t = new Date(times[i]).getTime();
+      const p = Number(precip[i] || 0);
+      const dtHours = (t - nowMs) / (1000*60*60);
+
+      if (dtHours <= 0 && dtHours >= -24 && p > 0){
+        hadRainPast24 = true;
+      }
+      if (dtHours > 0 && dtHours <= 10 && p > 0){
+        hasRainNext10 = true;
+      }
+    }
+
+    document.getElementById('rain_past').textContent = hadRainPast24 ? 'Ja' : 'Nein';
+    document.getElementById('rain_next').textContent = hasRainNext10 ? 'Ja' : 'Nein';
+
+    // Empfehlung + Begründung
+    const adviceEl = document.getElementById('advice');
+    const reasonEl = document.getElementById('reason');
+    const dot = document.getElementById('dot');
+
+    if (hadRainPast24 || hasRainNext10){
+      adviceEl.textContent = 'Bitte Decken anlassen / anziehen';
+      const why = [];
+      if (hadRainPast24) why.push('in den letzten 24 Stunden Regen');
+      if (hasRainNext10) why.push('in den nächsten 10 Stunden Regen erwartet');
+      reasonEl.textContent = 'Begründung: ' + why.join(' und ') + '. Nasse Pferde kühlen schneller aus, verschlammen stärker und benötigen mehr Zeit zum Trocknen/Putzen – deshalb Decken an.';
+      dot.style.background = 'var(--bad)';
+    } else if (typeof curTA === 'number' && curTA > OFF_THRESHOLD){
+      adviceEl.textContent = 'Bitte Decken ausziehen';
+      reasonEl.textContent = 'Begründung: Gefühlte Temperatur über 12 °C. Bei trockenen Bedingungen vermeiden wir Überhitzung unter der Decke und reduzieren Schwitzen bei der Arbeit.';
+      dot.style.background = 'var(--good)';
+    } else {
+      adviceEl.textContent = 'Bitte Decken anlassen / anziehen';
+      reasonEl.textContent = 'Begründung: Gefühlte Temperatur 12 °C oder darunter. Unter 12 °C steigt der Wärmeverlust – Decken schützen Muskulatur und verkürzen Putz-/Trocknungszeiten.';
+      dot.style.background = 'var(--bad)';
+    }
+
+    // Trend & proaktive Empfehlung (nächste 3 Stunden)
+    let nextIdx = -1;
+    for (let i=0; i<times.length; i++){
+      const t = new Date(times[i]).getTime();
+      if (t > nowMs){ nextIdx = i; break; }
+    }
+    let trendTxt = '';
+    if (nextIdx >= 1){
+      const lastTA = app[nextIdx-1];
+      const next3 = app.slice(nextIdx, nextIdx+3).filter(v => typeof v === 'number');
+      if (typeof lastTA === 'number' && next3.length){
+        const avgNext = next3.reduce((a,b)=>a+b,0)/next3.length;
+        const delta = avgNext - lastTA;
+        const dir = delta > 0.5 ? 'steigend' : (delta < -0.5 ? 'sinkend' : 'konstant');
+        trendTxt = 'Trend: gefühlte Temperatur ' + dir + ' (≈ ' + Math.round(delta) + ' °C in ~3 h). ';
+
+        if (!(hadRainPast24 || hasRainNext10)){
+          const willCrossUp = app.slice(nextIdx, nextIdx+3).some(v => typeof v==='number' && v > OFF_THRESHOLD);
+          const willCrossDown = app.slice(nextIdx, nextIdx+3).some(v => typeof v==='number' && v <= OFF_THRESHOLD);
+          if (typeof curTA === 'number'){
+            if (curTA <= OFF_THRESHOLD && willCrossUp){
+              trendTxt += 'Voraussichtlich in den nächsten Stunden > 12 °C – Decken dann ausziehen.';
+            } else if (curTA > OFF_THRESHOLD && willCrossDown){
+              trendTxt += 'Voraussichtlich in den nächsten Stunden ≤ 12 °C – Decken dann wieder anziehen.';
+            }
+          }
+        }
+      }
+    }
+    document.getElementById('trend').textContent = trendTxt;
+  }).catch(err=>{
+    document.getElementById('advice').textContent = 'Fehler beim Laden der Wetterdaten';
+    document.getElementById('reason').textContent = '';
+    document.getElementById('dot').style.background = 'var(--warn)';
+    document.getElementById('trend').textContent = '';
+    console.error(err);
+  });
+})();
+</script>
+</body>
+</html>
