@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gefühlte Temperatur – Widget</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121a2b;
+      --accent:#6ec1ff;
+      --good:#3bb273;
+      --warn:#ffb020;
+      --bad:#e15554;
+      --text:#e8eef7;
+      --muted:#a7b3c9;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    .wrap{max-width:760px;margin:0 auto;padding:18px}
+    .card{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+    h2{margin:0 0 10px;font-size:18px;font-weight:600;color:#e9f1ff;text-align:center}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .big{font-size:54px;font-weight:700;line-height:1;margin:0.2rem 0 0.6rem;text-align:center}
+    .unit{font-size:16px;color:var(--muted)}
+    .hint{padding:10px 12px;border-radius:12px;background:#0e1b2e;display:flex;align-items:center;gap:10px;margin-top:10px}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .kpi{display:flex;align-items:baseline;justify-content:center;gap:6px}
+    .kpi small{color:var(--muted)}
+    .row{display:flex;gap:14px;justify-content:space-between;flex-wrap:wrap}
+    .pill{padding:6px 10px;border-radius:999px;background:#0e1b2e;color:var(--muted);font-size:12px}
+    .footer{margin-top:10px;color:#8fa3c3;font-size:12px;text-align:center}
+    @media (max-width:560px){ .grid{grid-template-columns:1fr} .big{font-size:44px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2 id="title">Gefühlte Temperatur</h2>
+      <div class="grid">
+        <div>
+          <div class="kpi">
+            <div class="big" id="current">--</div><div class="unit">°C</div>
+          </div>
+          <div class="hint" id="advice-wrap">
+            <div class="dot" id="dot" style="background:var(--warn)"></div>
+            <div id="advice">Lade Daten …</div>
+          </div>
+        </div>
+        <div>
+          <div class="row">
+            <div class="pill">Heute min (gefühlt): <strong id="amin">--</strong> °C</div>
+            <div class="pill">Heute max (gefühlt): <strong id="amax">--</strong> °C</div>
+          </div>
+          <div class="footer">
+            Daten: <a href="https://open-meteo.com/" target="_blank" style="color:#9ad1ff;text-decoration:none">Open‑Meteo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const qs = new URLSearchParams(location.search);
+  const lat = parseFloat(qs.get('lat')) || 50.99;     // Köln‑Esch ca.
+  const lon = parseFloat(qs.get('lon')) || 6.88;
+  const title = qs.get('title') || 'Gefühlte Temperatur';
+  const tz = qs.get('tz') || 'Europe/Berlin';
+  const threshold = parseFloat(qs.get('threshold')) || 10; // °C Schwellwert für Decken
+  document.getElementById('title').textContent = title;
+
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+              `&current=apparent_temperature` +
+              `&daily=apparent_temperature_max,apparent_temperature_min` +
+              `&timezone=${encodeURIComponent(tz)}`;
+
+  fetch(url, {cache: 'no-store'}).then(r=>r.json()).then(data=>{
+    const cur = data?.current?.apparent_temperature;
+    const dmax = data?.daily?.apparent_temperature_max?.[0];
+    const dmin = data?.daily?.apparent_temperature_min?.[0];
+
+    const round = v => (v===undefined||v===null||isNaN(v)) ? '--' : Math.round(v);
+
+    document.getElementById('current').textContent = round(cur);
+    document.getElementById('amax').textContent = round(dmax);
+    document.getElementById('amin').textContent = round(dmin);
+
+    const adviceEl = document.getElementById('advice');
+    const dot = document.getElementById('dot');
+
+    if (typeof cur === 'number') {
+      if (cur > threshold) {
+        adviceEl.textContent = 'Bitte Decken ausziehen (gefühlt > ' + threshold + '°C)';
+        dot.style.background = 'var(--good)';
+      } else {
+        adviceEl.textContent = 'Bitte Decken anziehen (gefühlt ≤ ' + threshold + '°C)';
+        dot.style.background = 'var(--bad)';
+      }
+    } else {
+      adviceEl.textContent = 'Keine aktuellen Daten verfügbar';
+      dot.style.background = 'var(--warn)';
+    }
+  }).catch(err=>{
+    document.getElementById('advice').textContent = 'Fehler beim Laden der Wetterdaten';
+    document.getElementById('dot').style.background = 'var(--warn)';
+    console.error(err);
+  });
+})();
+</script>
+</body>
+</html>
