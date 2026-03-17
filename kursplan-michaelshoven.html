@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kursplan – Kinderreitschule Köln | Standort Michaelshoven</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+        :root {
+            --color-ponyclub: #4CAF50;
+            --color-longe: #2196F3;
+            --color-pcmaxi: #00BCD4;
+            --color-therapie: #E91E63;
+            --color-bg: #faf9f6;
+            --color-header: #2d5016;
+            --color-header-light: #4a7c28;
+            --color-text: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+        }
+
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--color-header) 0%, var(--color-header-light) 100%);
+            border-radius: 16px;
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 20px;
+            color: white;
+            box-shadow: 0 4px 20px rgba(45,80,22,0.3);
+        }
+
+        .header img {
+            height: 90px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .header-text h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header-text .subtitle {
+            font-size: 16px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .header-text .standort {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .header-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { background: rgba(255,255,255,0.3); }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .schedule {
+            display: grid;
+            grid-template-columns: 80px repeat(3, 1fr);
+            gap: 2px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .schedule-header {
+            background: var(--color-header);
+            color: white;
+            padding: 14px 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .schedule-header.time-col {
+            background: #555;
+            font-size: 12px;
+        }
+
+        .time-slot {
+            background: #f5f5f5;
+            padding: 8px 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cell {
+            padding: 6px;
+            min-height: 65px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .course-block {
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: white;
+            font-weight: 600;
+            line-height: 1.3;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .course-block .course-name {
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .course-block .course-detail {
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .course-block.ponyclub { background: var(--color-ponyclub); }
+        .course-block.longe { background: var(--color-longe); }
+        .course-block.pcmaxi { background: var(--color-pcmaxi); }
+        .course-block.therapie { background: var(--color-therapie); }
+
+        .course-info {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid;
+        }
+
+        .info-card h3 { font-size: 15px; margin-bottom: 6px; }
+        .info-card p { font-size: 13px; color: #666; line-height: 1.5; }
+        .info-card.ponyclub { border-color: var(--color-ponyclub); }
+        .info-card.pcmaxi { border-color: var(--color-pcmaxi); }
+        .info-card.therapie { border-color: var(--color-therapie); }
+
+        .footer {
+            margin-top: 20px;
+            background: var(--color-header);
+            border-radius: 12px;
+            padding: 20px 32px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .footer a { color: #a8d88a; text-decoration: none; }
+        .footer-note { font-size: 12px; opacity: 0.7; }
+
+        @media print {
+            body { background: white; }
+            .page { padding: 0; max-width: 100%; }
+            .header { border-radius: 0; margin-bottom: 10px; padding: 16px 20px; }
+            .header img { height: 60px; }
+            .header-actions { display: none; }
+            .schedule { border-radius: 0; box-shadow: none; }
+            .footer { border-radius: 0; margin-top: 10px; }
+            .legend { box-shadow: none; border: 1px solid #ddd; }
+            .no-print { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; padding: 16px; }
+            .header-actions { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <!-- HEADER -->
+        <div class="header">
+            <img src="Logo_Kinderreitschule_Koeln_trans.png" alt="Kinderreitschule Köln" id="logo">
+            <div class="header-text">
+                <h1>Kursplan Kinderreitschule Köln</h1>
+                <div class="subtitle">Frohnhof e.V. – Inklusive Kinderreitschule</div>
+                <span class="standort">📍 Standort Michaelshoven</span>
+            </div>
+            <div class="header-actions no-print">
+                <button class="btn" onclick="window.print()">🖨️ Drucken / PDF</button>
+            </div>
+        </div>
+
+        <!-- LEGENDE -->
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--color-ponyclub)"></div> Ponyclub</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--color-pcmaxi)"></div> PC-Maxi / Longe</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--color-therapie)"></div> Therapie</div>
+        </div>
+
+        <!-- STUNDENPLAN -->
+        <div class="schedule">
+            <!-- Header -->
+            <div class="schedule-header time-col">Uhrzeit</div>
+            <div class="schedule-header">Freitag</div>
+            <div class="schedule-header">Samstag</div>
+            <div class="schedule-header">Sonntag</div>
+
+            <!-- 10:00 -->
+            <div class="time-slot">10:00</div>
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="course-block ponyclub">
+                    <div class="course-name">Ponyclub</div>
+                    <div class="course-detail">10:00 – 11:00</div>
+                </div>
+            </div>
+            <div class="cell"></div>
+
+            <!-- 11:00 -->
+            <div class="time-slot">11:00</div>
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="course-block ponyclub">
+                    <div class="course-name">Ponyclub</div>
+                    <div class="course-detail">11:15</div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="course-block pcmaxi">
+                    <div class="course-name">PC-Maxi Longe</div>
+                    <div class="course-detail">11:00</div>
+                </div>
+            </div>
+
+            <!-- 12:00 -->
+            <div class="time-slot">12:00</div>
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="course-block ponyclub">
+                    <div class="course-name">Ponyclub</div>
+                    <div class="course-detail">12:30</div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="course-block pcmaxi">
+                    <div class="course-name">PC-Maxi Longe</div>
+                    <div class="course-detail">12:00</div>
+                </div>
+            </div>
+
+            <!-- 13:00 -->
+            <div class="time-slot">13:00</div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="course-block ponyclub">
+                    <div class="course-name">Ponyclub</div>
+                    <div class="course-detail">13:00</div>
+                </div>
+            </div>
+
+            <!-- 14:00 -->
+            <div class="time-slot">14:00</div>
+            <div class="cell">
+                <div class="course-block therapie">
+                    <div class="course-name">Therapie</div>
+                    <div class="course-detail">14:00 – 15:00 · Regenwald</div>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <!-- 15:45 -->
+            <div class="time-slot">15:45</div>
+            <div class="cell">
+                <div class="course-block ponyclub">
+                    <div class="course-name">Ponyclub</div>
+                    <div class="course-detail">15:45</div>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <!-- 17:00 -->
+            <div class="time-slot">17:00</div>
+            <div class="cell">
+                <div class="course-block ponyclub">
+                    <div class="course-name">Ponyclub</div>
+                    <div class="course-detail">17:00</div>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+        </div>
+
+        <!-- KURSBESCHREIBUNGEN -->
+        <div class="course-info">
+            <div class="info-card ponyclub">
+                <h3>🐴 Ponyclub</h3>
+                <p>Spielerischer Einstieg für Kinder ab 4 Jahren. Putzen, Führen, erstes Sitzen auf dem Pony. In kleinen Gruppen lernen die Kinder den respektvollen Umgang mit dem Pferd.</p>
+            </div>
+            <div class="info-card pcmaxi">
+                <h3>🏇 PC-Maxi / Longe</h3>
+                <p>Für fortgeschrittene Ponyclub-Kinder. Einzelunterricht an der Longe kombiniert mit mehr Eigenständigkeit. Fokus auf Balance, Haltung und erste Bahnfiguren.</p>
+            </div>
+            <div class="info-card therapie">
+                <h3>💚 Therapie (Regenwald)</h3>
+                <p>Pferdegestützte therapeutische und pädagogische Förderung. In Zusammenarbeit mit dem Projekt Regenwald – inklusive Einzelförderung für Kinder und Jugendliche.</p>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div>
+                <strong>Kinderreitschule Köln – Frohnhof e.V.</strong><br>
+                Standort Michaelshoven<br>
+                📞 0159 0173 9358 · ✉️ <a href="mailto:s.mueller@frohnhof-koeln.de">s.mueller@frohnhof-koeln.de</a>
+            </div>
+            <div style="text-align:right">
+                <div class="footer-note">Änderungen vorbehalten · Stand: März 2026</div>
+                <div class="footer-note">🌐 <a href="https://kinderreitschule-koeln.de">kinderreitschule-koeln.de</a></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
