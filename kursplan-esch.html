@@ -49,7 +49,7 @@ body {
 .header {
   background: linear-gradient(135deg, #2d2a26 0%, #4a4540 40%, #3d3832 100%);
   color: #fff;
-  padding: 0.4rem 2rem;
+  padding: 0.15rem 2rem;
   position: relative;
 }
 .header::after {
@@ -67,7 +67,7 @@ body {
   gap: 1.5rem;
 }
 .logo-wrap img {
-  height: 240px;
+  height: 120px;
   width: auto;
   filter: brightness(0) invert(1);
 }
@@ -327,7 +327,7 @@ body {
 .modal-card {
   background: var(--bg-card);
   border-radius: 18px;
-  max-width: 420px;
+  max-width: 600px;
   width: 100%;
   padding: 1.8rem;
   box-shadow: 0 24px 64px rgba(0,0,0,0.2);
@@ -1081,25 +1081,27 @@ function openModal(b) {
        <div class="trainer-row"><strong>🤝 Trainer-Assistent/in:</strong> ${s.assistant || '(Platzhalter)'}</div>`
     : '';
 
-  /* Kids + Pferde in Gruppen A & B */
+  /* Kids + Pferde in Gruppen A & B – Abgemeldete bleiben in ihrer Gruppe */
   let kidsHTML = '';
   if (s.kids && s.kids.length > 0) {
-    const activeKids = s.kids.filter(k => !k.cancelled);
-    const cancelledKids = s.kids.filter(k => k.cancelled);
-    const half = Math.ceil(activeKids.length / 2);
-    const groupA = activeKids.slice(0, half);
-    const groupB = activeKids.slice(half);
+    const allKids = s.kids;
+    const half = Math.ceil(allKids.length / 2);
+    const groupA = allKids.slice(0, half);
+    const groupB = allKids.slice(half);
 
     function renderGroup(name, kids, maxPerGroup) {
       let html = `<div class="group-block"><div class="group-header">${name}</div><ul class="kids-list">`;
       kids.forEach(k => {
+        const nameStyle = k.cancelled ? 'text-decoration:line-through; opacity:0.5;' : '';
+        const cancelBadge = k.cancelled ? ' <span class="cancel-badge">abgemeldet</span>' : '';
         html += `<li>
-          <span class="kid-name">${k.name}</span>
+          <span class="kid-name" style="${nameStyle}">${k.name}${cancelBadge}</span>
           <span class="kid-horse">🐎 ${k.horse}</span>
         </li>`;
       });
       /* freie Plätze in der Gruppe */
-      const emptySlots = maxPerGroup - kids.length;
+      const activeInGroup = kids.filter(k => !k.cancelled).length;
+      const emptySlots = Math.max(0, maxPerGroup - activeInGroup);
       for (let i = 0; i < emptySlots; i++) {
         html += `<li class="empty-slot"><span class="kid-name" style="opacity:0.4; font-style:italic;">— freier Platz —</span><span class="kid-horse" style="opacity:0.3;">🐎 —</span></li>`;
       }
@@ -1112,17 +1114,7 @@ function openModal(b) {
     kidsHTML += '<div class="groups-container">';
     kidsHTML += renderGroup('Gruppe A', groupA, maxPerGroup);
     kidsHTML += renderGroup('Gruppe B', groupB, max ? max - maxPerGroup : groupB.length);
-    kidsHTML += '</div>';
-
-    /* Abgemeldete separat */
-    if (cancelledKids.length > 0) {
-      kidsHTML += '<div class="cancelled-section"><strong>Abgemeldet:</strong><ul class="kids-list">';
-      cancelledKids.forEach(k => {
-        kidsHTML += `<li><span class="kid-name" style="text-decoration:line-through; opacity:0.5;">${k.name} <span class="cancel-badge">abgemeldet</span></span></li>`;
-      });
-      kidsHTML += '</ul></div>';
-    }
-    kidsHTML += '</div>';
+    kidsHTML += '</div></div>';
   }
   document.getElementById('modalKids').innerHTML = kidsHTML;
 
