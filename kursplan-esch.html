@@ -202,6 +202,25 @@ body {
   font-weight: 400;
 }
 
+.print-btn {
+  margin-top: 0.8rem;
+  padding: 0.5rem 1.2rem;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+.print-btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+@media print { .print-btn { display: none; } }
+
 /* ═══════════════════════════════════════════
    PHOTO STRIP
    ═══════════════════════════════════════════ */
@@ -374,9 +393,14 @@ body {
   transition: var(--transition);
 }
 
-.course-block:hover {
+.course-block:hover, .course-block.touch-active {
   transform: translateY(-2px);
   box-shadow: var(--shadow-medium);
+}
+.course-block.touch-active {
+  filter: brightness(1.08);
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
 }
 
 .course-block:active {
@@ -874,25 +898,7 @@ body {
   <div class="hero-inner">
     <div class="hero-left">
       <div class="logo-wrap">
-        <!-- Inline SVG logo fallback (Pferdekopf Line-Art + FH EST. 2018) -->
-        <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <!-- Horse head outline -->
-            <path d="M38 78 C38 78, 32 62, 34 52 C36 42, 38 36, 44 30 C48 26, 50 22, 48 16 C48 16, 52 20, 56 18 C60 16, 62 12, 64 10 C64 10, 66 18, 64 24 C62 30, 62 34, 64 40 C66 46, 68 54, 66 62 C64 70, 62 76, 60 78" />
-            <!-- Ear -->
-            <path d="M52 18 C52 14, 54 10, 56 8" />
-            <!-- Eye -->
-            <circle cx="52" cy="34" r="2" fill="#fff" stroke="none" />
-            <!-- Nostril -->
-            <path d="M40 56 C42 55, 43 56, 42 58" />
-            <!-- Mane suggestion -->
-            <path d="M56 20 C58 24, 60 28, 62 34" opacity="0.5" />
-            <path d="M54 22 C56 26, 58 30, 60 36" opacity="0.3" />
-          </g>
-          <!-- FH text -->
-          <text x="50" y="88" text-anchor="middle" fill="#fff" font-family="Poppins, sans-serif" font-size="8" font-weight="700" letter-spacing="3">FH</text>
-          <text x="50" y="96" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-family="Poppins, sans-serif" font-size="4.5" font-weight="400" letter-spacing="1.5">EST. 2018</text>
-        </svg>
+        <img src="Logo_FH_transparent.png" alt="Frohnhof Logo">
       </div>
       <div class="hero-text">
         <h1>
@@ -908,6 +914,7 @@ body {
       </div>
       <div class="semester" style="margin-top: 0.6rem;">Frühjahr 2026</div>
       <div class="location">Frohnhofstr. 2 · 50765 Köln</div>
+      <button class="print-btn" onclick="window.print()" title="Kursplan drucken">🖨️ Drucken</button>
     </div>
   </div>
 </header>
@@ -1191,8 +1198,32 @@ function openModal(block) {
 
 function closeModal() { modal.classList.remove('active'); }
 
+/* Mobile touch support */
+const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
 document.querySelectorAll('.course-block').forEach(b => {
-  b.addEventListener('click', () => openModal(b));
+  if (isTouchDevice) {
+    /* Touch: first tap = highlight, second tap = open modal */
+    let activeBlock = null;
+    b.addEventListener('touchstart', (e) => {
+      /* Remove highlight from all blocks */
+      document.querySelectorAll('.course-block.touch-active').forEach(el => el.classList.remove('touch-active'));
+      
+      if (activeBlock === b) {
+        /* Second tap on same block → open modal */
+        openModal(b);
+        activeBlock = null;
+      } else {
+        /* First tap → highlight */
+        b.classList.add('touch-active');
+        activeBlock = b;
+      }
+    }, { passive: true });
+  }
+  
+  b.addEventListener('click', (e) => {
+    if (!isTouchDevice) openModal(b);
+  });
   b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(b); } });
 });
 
