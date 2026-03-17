@@ -384,6 +384,43 @@ body {
 }
 .modal-trainer strong { color: var(--text); }
 
+.modal-kids {
+  margin-top: 0.8rem;
+  padding: 0.8rem;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--text-sub);
+}
+.modal-kids strong { color: var(--text); display: block; margin-bottom: 0.5rem; }
+.kids-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.kids-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.kids-list li:last-child { border-bottom: none; }
+.kid-name { font-weight: 500; color: var(--text); }
+.kid-horse { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
+.cancel-badge {
+  display: inline-block;
+  font-size: 0.58rem;
+  background: var(--red);
+  color: white;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.empty-slot { opacity: 0.6; }
+
 /* ═══════ KURSBESCHREIBUNGEN ═══════ */
 .descriptions {
   max-width: 1280px;
@@ -678,6 +715,7 @@ body {
       <p id="modalDesc"></p>
       <div class="modal-stats" id="modalStats"></div>
       <div class="modal-trainer" id="modalTrainer"></div>
+      <div id="modalKids"></div>
     </div>
   </div>
 </div>
@@ -695,53 +733,190 @@ const TYPES = {
   erwachsene:   { emoji:'🧑', label:'Erwachsene',      color:'#90a4ae', bg:'rgba(144,164,174,0.10)', desc:'Reitunterricht für Erwachsene.' }
 };
 
-/* Daten aus Stundenplan – belegt/gesamt für Ampel */
+/* kids: [{name, horse, cancelled}] – aus Excel + Platzhalter-Pferde */
 const SCHEDULE = [
   { day:'Montag', slots:[
-    { type:'kjp',    time:'13:15 – 14:45', label:'Förderschule',  max:null, filled:null, trainer:'—' },
-    { type:'longe',  time:'15:30 – 16:30', max:3, filled:3, trainer:'— (Platzhalter)' },
-    { type:'longe',  time:'16:30 – 17:30', max:3, filled:3, trainer:'— (Platzhalter)' },
-    { type:'frteam', time:'17:30 – 18:30', max:5, filled:5, trainer:'— (Platzhalter)' },
-    { type:'erwachsene', time:'18:30 – 19:30', max:3, filled:1, trainer:'— (Platzhalter)' },
+    { type:'kjp', time:'13:15 – 14:45', label:'Förderschule', max:null, filled:null, trainer:'(Platzhalter)', kids:[] },
+    { type:'longe', time:'15:30 – 16:30', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Vollmann, Emma', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Wuppermann, Greta', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Verhülsdonk, Emilia', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'longe', time:'16:30 – 17:30', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Reutersberg, Sophie', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Oster, Emily', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Richter, Fine', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'frteam', time:'17:30 – 18:30', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Richter, Clara', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Wershoven, Zoe', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Schurer, Pia', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Schurer, Emmi', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Rellecke, Luzie', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Werner, Nike', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'erwachsene', time:'18:30 – 19:30', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Dickomeit (RB Dakota)', horse:'Dakota', cancelled:false},
+    ]},
   ]},
   { day:'Dienstag', slots:[
-    { type:'beritt',       time:'11:00',         max:null, filled:null, trainer:'— (Platzhalter)' },
-    { type:'longe',        time:'15:00 – 16:00', max:3, filled:3, trainer:'— (Platzhalter)' },
-    { type:'longe',        time:'16:00 – 17:00', max:3, filled:3, trainer:'— (Platzhalter)' },
-    { type:'frteam',       time:'17:00 – 17:45', max:4, filled:4, trainer:'— (Platzhalter)' },
-    { type:'springstunde', time:'17:45 – 18:30', max:null, filled:null, trainer:'— (Platzhalter)' },
+    { type:'beritt', time:'11:00', max:null, filled:null, trainer:'(Platzhalter)', kids:[] },
+    { type:'longe', time:'15:00 – 16:00', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Metzen, Emilia', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Thielscher, Lina', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Köhler, Marie', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'longe', time:'16:00 – 17:00', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Fröhlich, Nellie', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Bärenz, Clara', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Dreher, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'frteam', time:'17:00 – 17:45', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Lohrmann, Tiara', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Wilke, Emma', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Horstmann, Tilda', horse:'(Pferd zuweisen)', cancelled:true},
+      {name:'Odenthal, Ella', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Peterhänsel, Kiran', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Höddinghaus, Franzi', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'springstunde', time:'17:45 – 18:30', max:null, filled:null, trainer:'(Platzhalter)', kids:[] },
   ]},
   { day:'Mittwoch', slots:[
-    { type:'ponyclub', time:'15:00 – 16:00', max:5, filled:5, trainer:'— (Platzhalter)' },
-    { type:'pcmaxi',   time:'15:30 – 17:00', max:4, filled:4, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'16:15 – 17:15', max:5, filled:5, trainer:'— (Platzhalter)' },
-    { type:'frteam',   time:'17:45 – 18:45', max:6, filled:6, trainer:'— (Platzhalter)' },
+    { type:'ponyclub', time:'15:00 – 16:00', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Ebner, Carla', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Busanel, Anna', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Bukowickie, Mila', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Alberts, Mina', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Weinmann, Mieke', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'ponyclub', time:'16:15 – 17:15', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Weinmann, Fine', horse:'(Pferd zuweisen)', cancelled:true},
+      {name:'Bader, Mia Charlott', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Wunsch, Mila', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Lenhardt, Mia', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'König, Emilio', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Turner, Matilda', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'frteam', time:'17:45 – 18:45', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Buttler, Mica', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Wittling, Amy', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Knüpling, Lucy', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Havranek, Annabelle', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Protschka, Mina', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Merkamp, Katharina', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
   ]},
   { day:'Donnerstag', slots:[
-    { type:'longe',     time:'15:30 – 16:30', max:3, filled:3, trainer:'— (Platzhalter)' },
-    { type:'freireiter', time:'16:30 – 17:15', max:4, filled:4, trainer:'— (Platzhalter)' },
-    { type:'freireiter', time:'17:15 – 18:00', max:4, filled:4, trainer:'— (Platzhalter)' },
-    { type:'erwachsene', time:'18:00 – 18:45', max:3, filled:3, trainer:'— (Platzhalter)' },
+    { type:'longe', time:'15:30 – 16:30', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Dickomeit, Lilly', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Gotthardt, Zoey', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Buchsot, Milla', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'freireiter', time:'16:30 – 17:15', max:4, trainer:'(Platzhalter)', kids:[
+      {name:'Umlauff, Johanna', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Schumacher, Ida', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Wilke, Emma', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Binder, Elsa', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'freireiter', time:'17:15 – 18:00', max:4, trainer:'(Platzhalter)', kids:[
+      {name:'Limp, Hannah', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Moritz, Marlene', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Schwarz, Leo', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Byrne, Johanna', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'erwachsene', time:'18:00 – 18:45', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Byrne, Constanze', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Schurer, Jessica', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Dickomeit, Kristina', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
   ]},
   { day:'Freitag', slots:[
-    { type:'kjp',       time:'09:00 – 10:30', max:null, filled:null, trainer:'— (Platzhalter)' },
-    { type:'longe',     time:'14:15 – 15:00', max:3, filled:3, trainer:'— (Platzhalter)' },
-    { type:'longe',     time:'15:00 – 16:00', max:3, filled:3, trainer:'— (Platzhalter)' },
-    { type:'longe',     time:'16:00 – 17:00', max:3, filled:3, trainer:'— (Platzhalter)' },
-    { type:'frteam',    time:'17:00 – 18:00', max:5, filled:5, trainer:'— (Platzhalter)' },
+    { type:'kjp', time:'09:00 – 10:30', max:null, filled:null, trainer:'(Platzhalter)', kids:[] },
+    { type:'longe', time:'14:15 – 15:00', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Lotta', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Makoi, Lina', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Scheffer, Mina', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'longe', time:'15:00 – 16:00', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Haaß, Louisa', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Brack, Josephine', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Kowalewski, Lara', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'longe', time:'16:00 – 17:00', max:3, label:'Longe (Zaubi)', trainer:'(Platzhalter)', kids:[
+      {name:'Skultety, Cataleya', horse:'Zaubi', cancelled:false},
+      {name:'Esser, Alexia', horse:'Zaubi', cancelled:false},
+      {name:'Militello, Alessia-Francesca', horse:'Zaubi', cancelled:false},
+    ]},
+    { type:'frteam', time:'17:00 – 18:00', max:5, trainer:'(Platzhalter)', kids:[
+      {name:'Rother, Thea', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Überschaer, Mila', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Li, Haixin', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Ach, Johanna', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
   ]},
   { day:'Samstag', slots:[
-    { type:'ponyclub', time:'10:00 – 11:00', max:6, filled:6, trainer:'— (Platzhalter)' },
-    { type:'pcmaxi',   time:'10:30 – 12:00', max:6, filled:6, trainer:'— (Platzhalter)' },
-    { type:'longe',    time:'11:15 – 12:15', max:3, filled:3, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'12:30 – 13:30', max:6, filled:6, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'13:45 – 14:45', max:6, filled:6, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'15:00 – 16:00', max:6, filled:6, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'16:15 – 17:15', max:4, filled:4, trainer:'— (Platzhalter)' },
+    { type:'ponyclub', time:'10:00 – 11:00', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Blümke, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Blümke, Viktoria', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Michelbrink, Malia', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Bratke, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Brendel-Möltgen, Lilli', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Lambrecht, Annabella', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'pcmaxi', time:'10:30 – 12:00', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Morawietz, Greta', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Steker, Catalina', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Scheunemann, Hannah', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Sufiani, Noelle', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'longe', time:'11:15 – 12:15', max:3, trainer:'(Platzhalter)', kids:[
+      {name:'Krause, Mila', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Stark, Penelope', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Deelmann, Emma', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'ponyclub', time:'12:30 – 13:30', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Jahn, Greta', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Weitz, Lina', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Dreßel/Rode, Mina', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Geloneck, Emily', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Dürfeld-Heiming, Amelie', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Dreßel/Rode, Tilda', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'ponyclub', time:'13:45 – 14:45', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Bosse, Isabelle', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'vom Hofe, Johanna', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Klinge, Emilia', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Labusga, Mila', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Streich, Clara', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Aretz, Fiete', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'ponyclub', time:'15:00 – 16:00', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Hackl, Sophia', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Odenthal, Romy', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Schüller, Tilda', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Fiebig, Matilda', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Klein, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Collier, Chiara', horse:'(Pferd zuweisen)', cancelled:false},
+    ]},
+    { type:'ponyclub', time:'16:15 – 17:15', max:6, trainer:'(Platzhalter)', kids:[
+      {name:'Schillberg, Noemi', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Heyden, Greta', horse:'(Pferd zuweisen)', cancelled:true},
+      {name:'Megid, Marie', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Strezoski, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
+      {name:'Schilling, Klara', horse:'(Pferd zuweisen)', cancelled:true},
+    ]},
   ]}
 ];
 
-function getAmpel(filled, max) {
+function getFilled(slot) {
+  if (slot.filled !== undefined && slot.filled !== null) return slot.filled;
+  if (slot.kids) return slot.kids.filter(k => !k.cancelled).length;
+  return null;
+}
+
+function getAmpel(slot) {
+  const max = slot.max;
+  const filled = getFilled(slot);
   if (max === null || filled === null) return '';
   const free = max - filled;
   if (free <= 0) return 'red';
@@ -749,7 +924,9 @@ function getAmpel(filled, max) {
   return 'green';
 }
 
-function getAmpelText(filled, max) {
+function getAmpelText(slot) {
+  const max = slot.max;
+  const filled = getFilled(slot);
   if (max === null || filled === null) return '';
   const free = max - filled;
   if (free <= 0) return 'Ausgebucht';
@@ -769,19 +946,18 @@ SCHEDULE.forEach(day => {
       <div class="day-count">${totalSlots} Kurs${totalSlots !== 1 ? 'e' : ''}</div>
     </div>
     <div class="day-slots">
-      ${day.slots.map(s => {
+      ${day.slots.map((s, idx) => {
         const t = TYPES[s.type];
-        const ampel = getAmpel(s.filled, s.max);
-        const spotsText = s.max ? `${s.filled || 0}/${s.max}` : '';
+        const filled = getFilled(s);
+        const ampel = getAmpel(s);
+        const spotsText = s.max ? `${filled || 0}/${s.max}` : '';
         return `
           <div class="course-block cb-${s.type}"
-               data-type="${s.type}" data-time="${s.time}" data-day="${day.day}"
-               data-max="${s.max || ''}" data-filled="${s.filled || ''}"
-               data-trainer="${s.trainer || ''}" data-label="${s.label || ''}"
+               data-slot-day="${day.day}" data-slot-idx="${idx}"
                role="button" tabindex="0">
             <div class="course-top">
               <span class="course-time">${s.time}</span>
-              ${ampel ? `<span class="ampel ${ampel}" title="${getAmpelText(s.filled, s.max)}"></span>` : ''}
+              ${ampel ? `<span class="ampel ${ampel}" title="${getAmpelText(s)}"></span>` : ''}
             </div>
             <div class="course-name-row">
               <span class="course-emoji">${t.emoji}</span>
@@ -798,15 +974,19 @@ SCHEDULE.forEach(day => {
 const modal = document.getElementById('modal');
 
 function openModal(b) {
-  const type = b.dataset.type;
-  const t = TYPES[type];
-  const max = b.dataset.max ? parseInt(b.dataset.max) : null;
-  const filled = b.dataset.filled ? parseInt(b.dataset.filled) : null;
+  const dayName = b.dataset.slotDay;
+  const idx = parseInt(b.dataset.slotIdx);
+  const dayData = SCHEDULE.find(d => d.day === dayName);
+  if (!dayData) return;
+  const s = dayData.slots[idx];
+  const t = TYPES[s.type];
+  const filled = getFilled(s);
+  const max = s.max;
 
   document.getElementById('modalIcon').textContent = t.emoji;
   document.getElementById('modalIcon').style.background = t.bg;
-  document.getElementById('modalName').textContent = b.dataset.label || t.label;
-  document.getElementById('modalTime').textContent = `${b.dataset.day} · ${b.dataset.time}`;
+  document.getElementById('modalName').textContent = s.label || t.label;
+  document.getElementById('modalTime').textContent = `${dayName} · ${s.time}`;
   document.getElementById('modalDesc').textContent = t.desc;
 
   let stats = '';
@@ -814,16 +994,39 @@ function openModal(b) {
     const free = max - (filled || 0);
     const ampelColor = free <= 0 ? 'var(--red)' : free === 1 ? 'var(--yellow)' : 'var(--green)';
     stats = `
-      <div class="modal-stat"><div class="stat-value">${max}</div><div class="stat-label">Plätze gesamt</div></div>
+      <div class="modal-stat"><div class="stat-value">${max}</div><div class="stat-label">Plätze</div></div>
       <div class="modal-stat"><div class="stat-value">${filled || 0}</div><div class="stat-label">Belegt</div></div>
       <div class="modal-stat"><div class="stat-value" style="color:${ampelColor}">${free}</div><div class="stat-label">Frei</div></div>`;
   }
   document.getElementById('modalStats').innerHTML = stats;
 
-  const trainer = b.dataset.trainer;
-  document.getElementById('modalTrainer').innerHTML = trainer
-    ? `<strong>Trainer/in:</strong> ${trainer}`
+  document.getElementById('modalTrainer').innerHTML = s.trainer
+    ? `<strong>🧑‍🏫 Trainer/in:</strong> ${s.trainer}`
     : '';
+
+  /* Kids + Pferde Liste */
+  let kidsHTML = '';
+  if (s.kids && s.kids.length > 0) {
+    kidsHTML = '<div class="modal-kids"><strong>🐴 Teilnehmer & Pferdeeinteilung:</strong><ul class="kids-list">';
+    s.kids.forEach(k => {
+      const nameStyle = k.cancelled ? 'text-decoration:line-through; opacity:0.5;' : '';
+      const cancelBadge = k.cancelled ? ' <span class="cancel-badge">abgemeldet</span>' : '';
+      kidsHTML += `<li>
+        <span class="kid-name" style="${nameStyle}">${k.name}${cancelBadge}</span>
+        <span class="kid-horse">🐎 ${k.horse}</span>
+      </li>`;
+    });
+    /* Show empty slots */
+    if (max !== null) {
+      const activeKids = s.kids.filter(k => !k.cancelled).length;
+      const emptySlots = max - activeKids;
+      for (let i = 0; i < emptySlots; i++) {
+        kidsHTML += `<li class="empty-slot"><span class="kid-name" style="opacity:0.4; font-style:italic;">— freier Platz —</span><span class="kid-horse" style="opacity:0.3;">🐎 —</span></li>`;
+      }
+    }
+    kidsHTML += '</ul></div>';
+  }
+  document.getElementById('modalKids').innerHTML = kidsHTML;
 
   modal.classList.add('active');
 }
