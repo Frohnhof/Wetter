@@ -34,22 +34,18 @@
     .advice .title.good{color:var(--good)}
     .advice .title.bad{color:var(--bad)}
     .advice .title.warn{color:var(--warn)}
-    .reason{color:#9ad1ff;font-size:12px;margin-top:6px;line-height:1.45;text-align:left}
+    .reason{color:#9ad1ff;font-size:12px;margin-top:6px;line-height:1.5;text-align:left}
+    .blanket-rec{margin-top:8px;padding:10px 12px;border-radius:10px;background:#111d30;border-left:3px solid var(--warn)}
+    .blanket-rec .bl-title{font-size:13px;font-weight:700;color:var(--warn);margin-bottom:4px}
+    .blanket-rec .bl-detail{font-size:12px;color:#c8d4eb;line-height:1.5}
     .trend{margin-top:10px;font-size:13px;text-align:center}
     .trend.good{color:var(--good)}
     .trend.bad{color:var(--bad)}
     .trend.warn{color:var(--warn)}
     .update-time{color:#8fa3c3;font-size:11px;text-align:center;margin-top:6px}
-
-    /* Turnout time picker */
-    .turnout-bar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;flex-wrap:wrap}
-    .turnout-bar .label{margin:0}
-    .time-btn{background:var(--pill-bg);color:var(--text);border:1px solid #2a3a55;border-radius:10px;padding:6px 14px;font-size:14px;cursor:pointer;font-weight:600;transition:all .2s}
-    .time-btn:hover{border-color:#6ec1ff;color:#6ec1ff}
-    .time-btn.active{border-color:#6ec1ff;background:#1a2a44;color:#6ec1ff}
-    .time-select{background:var(--pill-bg);color:var(--text);border:1px solid #2a3a55;border-radius:8px;padding:5px 8px;font-size:14px;cursor:pointer}
-
-    /* Collapsible buttons */
+    .turnout-bar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px}
+    .time-select{background:var(--pill-bg);color:var(--text);border:1px solid #2a3a55;border-radius:8px;padding:6px 12px;font-size:14px;cursor:pointer;font-weight:600}
+    .time-select:focus{border-color:#6ec1ff;outline:none}
     .toggle-btn{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--card);color:var(--text);border:1px solid #2a3a55;border-radius:12px;padding:12px 16px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;transition:all .2s}
     .toggle-btn:hover{border-color:#6ec1ff;background:#1a2a44}
     .toggle-btn .arrow{transition:transform .2s;font-size:12px;color:var(--muted)}
@@ -61,25 +57,28 @@
     .collapse-content .sub-title{font-size:13px;font-weight:700;color:#6ec1ff;margin:8px 0 4px}
     .collapse-content a{color:#9ad1ff;text-decoration:none}
     .collapse-content a:hover{text-decoration:underline}
-
-    .school-note{padding:4px 0}
-    .school-note strong{color:var(--warn)}
-
     .footer{margin-top:8px;color:#8fa3c3;font-size:11px;text-align:center}
+    .footer a{color:#9ad1ff;text-decoration:none}
   </style>
 </head>
 <body>
   <div class="wrap">
 
-    <!-- ===== HAUPTKARTE: EMPFEHLUNG ===== -->
+    <!-- ===== HAUPTKARTE ===== -->
     <div class="card">
       <h2 id="title">🐴 Pferdedecken-Empfehlung – Frohnhof</h2>
 
-      <div class="kpi-row">
-        <div class="label">Gefühlte Pferdetemperatur (inkl. +8 °C)</div>
+      <!-- Zeitwahl -->
+      <div class="turnout-bar">
+        <span class="label">🕗 Rausstellzeit:</span>
+        <select class="time-select" id="turnoutSelect"></select>
+      </div>
+
+      <div class="kpi-row" style="margin-top:10px">
+        <div class="label">Gefühlte Pferdetemperatur um <span id="turnout_label">08:00</span> Uhr (inkl. +8 °C)</div>
         <div class="mix"><div class="big-apparent" id="ta_horse">--</div><div class="unit">°C</div></div>
 
-        <div class="label" style="margin-top:8px">Gefühlte / Aktuelle Temperatur</div>
+        <div class="label" style="margin-top:8px">Gefühlte Temp. / Aktuelle Temp. um <span id="turnout_label2">08:00</span></div>
         <div class="mix">
           <div class="big-actual" id="ta_cur">--</div><div class="unit" style="margin-right:12px">°C</div>
           <div style="color:var(--muted);font-size:14px">(real: <span id="t_cur">--</span> °C)</div>
@@ -91,23 +90,8 @@
         <div class="pill">🌧️ Regen 10h: <strong id="rain_next">--</strong></div>
       </div>
       <div class="pillrow">
-        <div class="pill">💨 Wind: <strong id="wind">--</strong> km/h</div>
-        <div class="pill">☁️ <strong id="clouds">--</strong>%</div>
-      </div>
-
-      <!-- Rausstellzeit -->
-      <div class="turnout-bar">
-        <span class="label">🕗 Rausstellzeit:</span>
-        <button class="time-btn" data-h="6">06:00</button>
-        <button class="time-btn active" data-h="8">08:00</button>
-        <button class="time-btn" data-h="9">09:00</button>
-        <button class="time-btn" data-h="10">10:00</button>
-        <select class="time-select" id="customTime" title="Andere Uhrzeit">
-          <option value="">andere…</option>
-        </select>
-      </div>
-      <div style="text-align:center;margin-top:6px;font-size:12px;color:var(--muted)">
-        Pferdetemperatur um <span id="turnout_label">08:00</span>: <strong id="ta_turnout" style="color:var(--text)">--</strong> °C
+        <div class="pill">💨 Wind: <strong id="wind">--</strong> km/h (<span id="windTxt">--</span>)</div>
+        <div class="pill">☁️ <strong id="clouds">--</strong>% (<span id="cloudTxt">--</span>)</div>
       </div>
 
       <!-- Empfehlung -->
@@ -116,11 +100,17 @@
         <div class="reason" id="reason"></div>
       </div>
 
+      <!-- Deckentyp-Empfehlung -->
+      <div class="blanket-rec" id="blanketRec" style="display:none">
+        <div class="bl-title" id="blTitle"></div>
+        <div class="bl-detail" id="blDetail"></div>
+      </div>
+
       <div class="trend" id="trend"></div>
       <div class="update-time" id="updateTime"></div>
     </div>
 
-    <!-- ===== AUFKLAPPBAR: WETTER-DETAILS ===== -->
+    <!-- AUFKLAPPBAR: Wetter-Details -->
     <button class="toggle-btn" onclick="toggle('detailsPanel',this)">
       📊 Wetter-Details (Tageswerte) <span class="arrow">▼</span>
     </button>
@@ -136,25 +126,21 @@
         </div>
         <div class="pillrow">
           <div class="pill">💨 Böen: <strong id="gusts">--</strong> km/h</div>
-          <div class="pill">🌧️ 24h gesamt: <strong id="rain_past_mm">--</strong> mm</div>
-          <div class="pill">🌧️ 10h gesamt: <strong id="rain_next_mm">--</strong> mm</div>
+          <div class="pill">🌧️ 24h: <strong id="rain_past_mm">--</strong> mm</div>
+          <div class="pill">🌧️ 10h: <strong id="rain_next_mm">--</strong> mm</div>
         </div>
       </div>
     </div>
 
-    <!-- ===== AUFKLAPPBAR: REITSCHULPFERDE ===== -->
+    <!-- AUFKLAPPBAR: Reitschulpferde -->
     <button class="toggle-btn" onclick="toggle('schoolPanel',this)">
       🏫 Hinweis Reitschulpferde <span class="arrow">▼</span>
     </button>
     <div class="collapsible" id="schoolPanel">
-      <div class="collapse-content">
-        <div class="school-note" id="schoolNote">
-          <p id="schoolText"></p>
-        </div>
-      </div>
+      <div class="collapse-content" id="schoolContent"></div>
     </div>
 
-    <!-- ===== AUFKLAPPBAR: FELLWECHSEL / SAISON ===== -->
+    <!-- AUFKLAPPBAR: Fellwechsel -->
     <button class="toggle-btn" onclick="toggle('seasonPanel',this)">
       🔄 <span id="seasonBtnLabel">Saisoninfo & Fellwechsel</span> <span class="arrow">▼</span>
     </button>
@@ -165,26 +151,22 @@
       </div>
     </div>
 
-    <!-- ===== AUFKLAPPBAR: QUELLEN ===== -->
+    <!-- AUFKLAPPBAR: Quellen -->
     <button class="toggle-btn" onclick="toggle('sourcesPanel',this)">
       📚 Wissenschaftliche Quellen <span class="arrow">▼</span>
     </button>
     <div class="collapsible" id="sourcesPanel">
-      <div class="collapse-content" id="sourcesContent">
-        <p style="color:#8fa3c3;font-style:italic">Quellen werden nach dem Laden angezeigt…</p>
-      </div>
+      <div class="collapse-content" id="sourcesContent"></div>
     </div>
 
     <div class="footer">
-      Wetterdaten: <a href="https://open-meteo.com/" target="_blank" style="color:#9ad1ff;text-decoration:none">Open‑Meteo</a> · Frohnhof Winterregeln v4
+      Wetterdaten: <a href="https://open-meteo.com/" target="_blank">Open‑Meteo</a> · Frohnhof Winterregeln v4
     </div>
   </div>
 
 <script>
-// Toggle collapsible panels
 function toggle(id, btn){
-  const el = document.getElementById(id);
-  el.classList.toggle('open');
+  document.getElementById(id).classList.toggle('open');
   btn.classList.toggle('open');
 }
 
@@ -193,49 +175,37 @@ function toggle(id, btn){
   const lat = parseFloat(qs.get('lat')) || 50.99;
   const lon = parseFloat(qs.get('lon')) || 6.88;
   const tz = qs.get('tz') || 'Europe/Berlin';
-  const title = qs.get('title');
-  if (title) document.getElementById('title').textContent = title;
+  const titleParam = qs.get('title');
+  if (titleParam) document.getElementById('title').textContent = titleParam;
 
   const HORSE_OFFSET = 8;
-  const OFF_THRESHOLD = 12;
+  const OFF_THRESHOLD = 12;      // Pferdetemperatur > 12°C UND trocken → Decken aus
+  const SUNNY_OVERRIDE = 10;     // Bei Sonnenschein + wenig Wind: >10°C real → Decken aus
   const WIND_STRONG = 40;
+  const WIND_MODERATE = 25;
   let TURNOUT_HOUR = parseInt(qs.get('turnout')) || 8;
 
-  // Populate custom time dropdown (5-18)
-  const sel = document.getElementById('customTime');
+  // Dropdown befüllen (5:00 – 18:00)
+  const sel = document.getElementById('turnoutSelect');
   for (let h = 5; h <= 18; h++){
     const opt = document.createElement('option');
     opt.value = h;
-    opt.textContent = String(h).padStart(2,'0') + ':00';
+    opt.textContent = String(h).padStart(2,'0') + ':00 Uhr';
+    if (h === TURNOUT_HOUR) opt.selected = true;
     sel.appendChild(opt);
   }
 
-  // Store fetched data for re-render
   let cachedData = null;
-
-  // Time button handlers
-  document.querySelectorAll('.time-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      sel.value = '';
-      TURNOUT_HOUR = parseInt(btn.dataset.h);
-      if (cachedData) renderAll(cachedData);
-    });
-  });
   sel.addEventListener('change', () => {
-    if (sel.value) {
-      document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-      TURNOUT_HOUR = parseInt(sel.value);
-      if (cachedData) renderAll(cachedData);
-    }
+    TURNOUT_HOUR = parseInt(sel.value);
+    if (cachedData) renderAll(cachedData);
   });
 
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-              `&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,cloud_cover` +
-              `&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,cloud_cover` +
-              `&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min` +
-              `&timezone=${encodeURIComponent(tz)}&past_days=1`;
+    `&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,cloud_cover` +
+    `&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,cloud_cover` +
+    `&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min` +
+    `&timezone=${encodeURIComponent(tz)}&past_days=1`;
 
   fetch(url, {cache:'no-store'}).then(r=>r.json()).then(data=>{
     cachedData = data;
@@ -246,24 +216,53 @@ function toggle(id, btn){
   });
 
   function renderAll(data){
-    const cur = data?.current;
-    const curT = cur?.temperature_2m;
-    const curTA = cur?.apparent_temperature;
-    const curWind = cur?.wind_speed_10m;
-    const curGusts = cur?.wind_gusts_10m;
-    const curClouds = cur?.cloud_cover;
-
-    const dTmax  = data?.daily?.temperature_2m_max?.[1];
-    const dTmin  = data?.daily?.temperature_2m_min?.[1];
-    const dTAmax = data?.daily?.apparent_temperature_max?.[1];
-    const dTAmin = data?.daily?.apparent_temperature_min?.[1];
-
     const round = v => (v===undefined||v===null||isNaN(v)) ? '--' : Math.round(v);
-    const horseTemp = (typeof curTA === 'number') ? curTA + HORSE_OFFSET : null;
+    const now = new Date();
+    const nowMs = now.getTime();
+    const todayStr = now.toISOString().slice(0,10);
+    const hStr = String(TURNOUT_HOUR).padStart(2,'0') + ':00';
 
-    // Main KPIs
-    document.getElementById('t_cur').textContent = round(curT);
-    document.getElementById('ta_cur').textContent = round(curTA);
+    document.getElementById('turnout_label').textContent = hStr;
+    document.getElementById('turnout_label2').textContent = hStr;
+
+    // ----- Stündliche Daten -----
+    const times  = data?.hourly?.time || [];
+    const hTemp  = data?.hourly?.temperature_2m || [];
+    const hApp   = data?.hourly?.apparent_temperature || [];
+    const hPrec  = data?.hourly?.precipitation || [];
+    const hWind  = data?.hourly?.wind_speed_10m || [];
+    const hGust  = data?.hourly?.wind_gusts_10m || [];
+    const hCloud = data?.hourly?.cloud_cover || [];
+
+    // Finde Stunde zur Rausstellzeit
+    let tIdx = -1;
+    for (let i = 0; i < times.length; i++){
+      const d = new Date(times[i]);
+      if (d.toISOString().slice(0,10) === todayStr && d.getHours() === TURNOUT_HOUR){
+        tIdx = i; break;
+      }
+    }
+
+    // Werte zur gewählten Stunde (Fallback: aktuelle Daten)
+    let dispT, dispTA, dispWind, dispGust, dispCloud;
+    if (tIdx >= 0){
+      dispT     = hTemp[tIdx];
+      dispTA    = hApp[tIdx];
+      dispWind  = hWind[tIdx];
+      dispGust  = hGust[tIdx];
+      dispCloud = hCloud[tIdx];
+    } else {
+      const cur = data?.current;
+      dispT     = cur?.temperature_2m;
+      dispTA    = cur?.apparent_temperature;
+      dispWind  = cur?.wind_speed_10m;
+      dispGust  = cur?.wind_gusts_10m;
+      dispCloud = cur?.cloud_cover;
+    }
+
+    const horseTemp = (typeof dispTA === 'number') ? dispTA + HORSE_OFFSET : null;
+
+    // KPIs
     const taEl = document.getElementById('ta_horse');
     taEl.textContent = round(horseTemp);
     if (horseTemp !== null){
@@ -271,102 +270,161 @@ function toggle(id, btn){
       else if (horseTemp > 5) taEl.style.color = 'var(--warn)';
       else taEl.style.color = 'var(--bad)';
     }
+    document.getElementById('ta_cur').textContent = round(dispTA);
+    document.getElementById('t_cur').textContent = round(dispT);
 
-    document.getElementById('wind').textContent = round(curWind);
-    document.getElementById('clouds').textContent = round(curClouds);
+    const cloudText = c => { if(c==null) return '--'; if(c<20) return 'Sonne ☀️'; if(c<50) return 'leicht bewölkt'; if(c<80) return 'bewölkt'; return 'bedeckt'; };
+    const windText = w => { if(w==null) return '--'; if(w<10) return 'schwach'; if(w<25) return 'mäßig'; if(w<40) return 'frisch'; return 'stark'; };
 
-    // Detail KPIs
-    document.getElementById('t_max').textContent = round(dTmax);
-    document.getElementById('t_min').textContent = round(dTmin);
-    document.getElementById('ta_max').textContent = round(dTAmax);
-    document.getElementById('ta_min').textContent = round(dTAmin);
-    document.getElementById('gusts').textContent = round(curGusts);
+    document.getElementById('wind').textContent = round(dispWind);
+    document.getElementById('windTxt').textContent = windText(dispWind);
+    document.getElementById('clouds').textContent = round(dispCloud);
+    document.getElementById('cloudTxt').textContent = cloudText(dispCloud);
 
-    // Hourly data
-    const times  = data?.hourly?.time || [];
-    const precip = data?.hourly?.precipitation || [];
-    const appH   = data?.hourly?.apparent_temperature || [];
-    const windH  = data?.hourly?.wind_speed_10m || [];
-    const cloudH = data?.hourly?.cloud_cover || [];
-    const now    = new Date();
-    const nowMs  = now.getTime();
-
+    // Regen-Analyse (immer ab jetzt, nicht ab Rausstellzeit)
     let hadRainPast24 = false, hasRainNext10 = false;
     let rainPast24mm = 0, rainNext10mm = 0;
-    let turnoutTA = null;
-
     for (let i = 0; i < times.length; i++){
       const t = new Date(times[i]).getTime();
-      const p = Number(precip[i] || 0);
+      const p = Number(hPrec[i] || 0);
       const dtH = (t - nowMs) / 3600000;
-
       if (dtH <= 0 && dtH >= -24 && p > 0){ hadRainPast24 = true; rainPast24mm += p; }
       if (dtH > 0 && dtH <= 10 && p > 0){ hasRainNext10 = true; rainNext10mm += p; }
-
-      const tDate = new Date(times[i]);
-      if (tDate.toISOString().slice(0,10) === now.toISOString().slice(0,10) && tDate.getHours() === TURNOUT_HOUR){
-        turnoutTA = appH[i];
-      }
     }
 
     document.getElementById('rain_past').textContent = hadRainPast24 ? 'Ja' : 'Nein';
     document.getElementById('rain_next').textContent = hasRainNext10 ? 'Ja' : 'Nein';
+
+    // Detail-KPIs
+    const dIdx = 1; // past_days=1 → index 1 = heute
+    document.getElementById('t_max').textContent = round(data?.daily?.temperature_2m_max?.[dIdx]);
+    document.getElementById('t_min').textContent = round(data?.daily?.temperature_2m_min?.[dIdx]);
+    document.getElementById('ta_max').textContent = round(data?.daily?.apparent_temperature_max?.[dIdx]);
+    document.getElementById('ta_min').textContent = round(data?.daily?.apparent_temperature_min?.[dIdx]);
+    document.getElementById('gusts').textContent = round(data?.current?.wind_gusts_10m);
     document.getElementById('rain_past_mm').textContent = rainPast24mm.toFixed(1);
     document.getElementById('rain_next_mm').textContent = rainNext10mm.toFixed(1);
-
-    // Turnout
-    const turnoutHorse = (typeof turnoutTA === 'number') ? turnoutTA + HORSE_OFFSET : horseTemp;
-    const hStr = String(TURNOUT_HOUR).padStart(2,'0') + ':00';
-    document.getElementById('turnout_label').textContent = hStr;
-    document.getElementById('ta_turnout').textContent = round(turnoutHorse);
 
     // ===== EMPFEHLUNG =====
     const advTitle = document.getElementById('adviceTitle');
     const reasonEl = document.getElementById('reason');
+    const blRec = document.getElementById('blanketRec');
+    const blTitle = document.getElementById('blTitle');
+    const blDetail = document.getElementById('blDetail');
     const parts = [];
     let adviceType = 'bad';
 
-    const cloudText = c => { if(c==null) return ''; if(c<20) return 'Sonne'; if(c<50) return 'leicht bewölkt'; if(c<80) return 'bewölkt'; return 'bedeckt'; };
-    const windText = w => { if(w==null) return ''; if(w<10) return 'schwach'; if(w<25) return 'mäßig'; if(w<40) return 'frisch'; return 'stark'; };
+    const isSunny = typeof dispCloud === 'number' && dispCloud < 30;
+    const isWindy = typeof dispWind === 'number' && dispWind >= WIND_MODERATE;
+    const isVeryWindy = typeof dispWind === 'number' && dispWind >= WIND_STRONG;
+    const realTemp = typeof dispT === 'number' ? dispT : null;
+    const month = now.getMonth() + 1;
+    const isCoatChange = (month >= 2 && month <= 4) || (month >= 8 && month <= 10);
+    const isSpringCoatChange = month >= 2 && month <= 4;
 
-    // Kurze, wesentliche Info-Zeilen
-    if (hadRainPast24) parts.push('🌧️ Regen in den letzten 24h.');
-    if (hasRainNext10) parts.push('🌧️ Regen in den nächsten 10h erwartet.');
-    if (!hadRainPast24 && !hasRainNext10) parts.push('✅ Trocken (letzte 24h + nächste 10h).');
-    if (typeof curWind === 'number') parts.push(`💨 Wind: ${windText(curWind)} (${round(curWind)} km/h)`);
-    if (typeof curClouds === 'number') parts.push(`☁️ ${cloudText(curClouds)} (${round(curClouds)}%)`);
+    // Regen-Info
+    if (hadRainPast24) parts.push(`🌧️ Es hat in den letzten 24 Stunden geregnet (${rainPast24mm.toFixed(1)} mm).`);
+    if (hasRainNext10) parts.push(`🌧️ In den nächsten 10 Stunden wird Regen erwartet (${rainNext10mm.toFixed(1)} mm).`);
+    if (!hadRainPast24 && !hasRainNext10) parts.push('✅ Trocken – kein Regen in den letzten 24h und keiner in den nächsten 10h erwartet.');
 
-    const refHorseTemp = turnoutHorse;
+    // Wetter-Kontext
+    if (typeof dispWind === 'number') parts.push(`💨 Wind um ${hStr}: ${windText(dispWind)} (${round(dispWind)} km/h).`);
+    if (typeof dispCloud === 'number') parts.push(`☁️ Bewölkung: ${cloudText(dispCloud)} (${round(dispCloud)}%).`);
 
+    // ----- ENTSCHEIDUNGSLOGIK -----
     if (hadRainPast24 || hasRainNext10){
+      // REGEN → Decken immer an
       advTitle.textContent = '🔴 Bitte Decken anlassen / anziehen';
       adviceType = 'bad';
       parts.push('');
-      parts.push('Nasse Pferde kühlen schneller aus – Decke schützt vor Auskühlung und Verschlammung.');
-    } else if (refHorseTemp !== null && refHorseTemp > OFF_THRESHOLD){
+      parts.push('Nasse Pferde kühlen deutlich schneller aus. Die Decke verhindert Auskühlung und reduziert die Verschlammung beim Wälzen erheblich.');
+      parts.push('Für die Reitschule bedeutet nasses, verschlammtes Fell ohne Decke: massiv verlängerte Putzzeiten und entsprechend kürzere Reitzeiten für die Schüler.');
+
+      if (isSpringCoatChange){
+        parts.push('🔄 Zusätzlich: Im Frühjahrsfellwechsel ist die natürliche Isolation eingeschränkt – die Pferde kühlen noch schneller aus als im vollen Winterfell.');
+      }
+
+      // Deckentyp nach Temperatur
+      blRec.style.display = 'block';
+      if (horseTemp !== null && horseTemp > 15){
+        blTitle.textContent = '🧥 Empfehlung: Regendecke (ungefüttert, 0g)';
+        blDetail.textContent = 'Temperaturen sind mild – eine ungefütterte, wasserdichte Regendecke reicht aus, um die Pferde trocken zu halten. Kein Wärmestau.';
+      } else if (horseTemp !== null && horseTemp > 8){
+        blTitle.textContent = '🧥 Empfehlung: Leichte Decke (50g Fütterung) oder Regendecke';
+        blDetail.textContent = 'Bei diesen Temperaturen bietet eine leicht gefütterte Decke (50g) ausreichend Schutz gegen Nässe und leichte Kälte. Bei milderem Regen reicht auch eine Regendecke (0g).';
+      } else if (horseTemp !== null && horseTemp > 0){
+        blTitle.textContent = '🧥 Empfehlung: Mittlere Winterdecke (150g Fütterung)';
+        blDetail.textContent = 'Kälte + Nässe = die kritischste Kombination. Eine Decke mit 150g Fütterung schützt die Muskulatur und verhindert starkes Auskühlen.';
+      } else {
+        blTitle.textContent = '🧥 Empfehlung: Dicke Winterdecke (200g+ Fütterung)';
+        blDetail.textContent = 'Sehr kalt und nass – eine dick gefütterte Decke (200g oder mehr) ist notwendig. Ggf. zusätzlich Halsteil verwenden.';
+      }
+
+    } else if (isSunny && !isWindy && realTemp !== null && realTemp > SUNNY_OVERRIDE){
+      // SONNE + >10°C + wenig Wind → Decken aus (Frohnhof-Erfahrungsregel)
       advTitle.textContent = '🟢 Bitte Decken ausziehen';
       adviceType = 'good';
       parts.push('');
-      parts.push(`Pferdetemperatur ${round(refHorseTemp)} °C (> ${OFF_THRESHOLD} °C) – trocken, kein Wärmestau riskieren.`);
-      if (typeof curWind === 'number' && curWind >= WIND_STRONG){
-        adviceType = 'warn';
-        advTitle.textContent = '🟡 Decken aus – aber Wind beachten!';
-        parts.push(`⚠️ Starker Wind – empfindliche Pferde ggf. leicht eindecken.`);
+      parts.push(`☀️ Sonnenschein bei ${round(realTemp)} °C und wenig Wind – ideale Bedingungen ohne Decke.`);
+      parts.push('Die Sonnenwärme lässt die gefühlte Temperatur zusätzlich steigen. Ohne Decke vermeiden wir Wärmestau und Schwitzen.');
+
+      if (isCoatChange){
+        parts.push('');
+        parts.push('🔄 Fellwechsel aktiv: Sehr guter Tag, um die Decken wegzulassen! Die Pferde können sich wälzen, gegenseitig Fellpflege betreiben und das lose Fell natürlich abstoßen. Decken würden dieses wichtige natürliche Verhalten verhindern.');
       }
+
+      blRec.style.display = 'none';
+
+    } else if (horseTemp !== null && horseTemp > OFF_THRESHOLD && !isVeryWindy){
+      // Pferdetemperatur > 12°C + nicht stürmisch → Decken aus
+      advTitle.textContent = '🟢 Bitte Decken ausziehen';
+      adviceType = 'good';
+      parts.push('');
+      parts.push(`Gefühlte Pferdetemperatur ${round(horseTemp)} °C (über ${OFF_THRESHOLD} °C). Es ist trocken – kein Risiko von Verschlammung oder Auskühlung.`);
+
+      if (isWindy){
+        parts.push(`⚠️ Mäßiger Wind (${round(dispWind)} km/h) – empfindliche oder ältere Pferde beobachten.`);
+      }
+
+      if (isCoatChange){
+        parts.push('');
+        parts.push('🔄 Fellwechsel aktiv: Gute Gelegenheit für die Pferde, sich zu wälzen und gegenseitig zu kratzen. Das unterstützt den natürlichen Fellwechsel und ist wichtig fürs Wohlbefinden.');
+      }
+
+      blRec.style.display = 'none';
+
     } else {
+      // Kalt / windig → Decken an
       advTitle.textContent = '🔴 Bitte Decken anlassen / anziehen';
       adviceType = 'bad';
       parts.push('');
-      parts.push(`Pferdetemperatur ${refHorseTemp !== null ? round(refHorseTemp) : '--'} °C (≤ ${OFF_THRESHOLD} °C) – Decke schützt die Muskulatur.`);
-    }
 
-    // Fellwechsel-Kurzhinweis in Empfehlung
-    const month = now.getMonth() + 1;
-    if (month >= 2 && month <= 4 && adviceType === 'good'){
-      parts.push('🔄 Fellwechsel aktiv – natürliche Isolation eingeschränkt. Nachmittags nochmal prüfen.');
-    }
-    if (month >= 8 && month <= 10 && adviceType === 'bad' && !hadRainPast24 && !hasRainNext10){
-      parts.push('🍂 Fellwechsel: Tagsüber Decke ggf. abnehmen, um Winterfell-Aufbau nicht zu hemmen.');
+      if (isVeryWindy){
+        parts.push(`Starker Wind (${round(dispWind)} km/h) senkt die gefühlte Temperatur erheblich – die Decke schützt vor Windchill und Wärmeverlust.`);
+      } else {
+        parts.push(`Gefühlte Pferdetemperatur ${horseTemp !== null ? round(horseTemp) : '--'} °C (≤ ${OFF_THRESHOLD} °C) – zum Schutz der Muskulatur bleiben die Decken an.`);
+      }
+
+      if (isSunny){
+        parts.push('☀️ Sonnenschein kann die Temperatur im Tagesverlauf noch anheben – später ggf. nochmal prüfen.');
+      }
+
+      if (isSpringCoatChange){
+        parts.push('🔄 Im Fellwechsel ist die natürliche Isolation eingeschränkt. An einem milderen Tag können die Decken aber bewusst weggelassen werden, damit die Pferde sich wälzen und Fellpflege betreiben können.');
+      }
+
+      // Deckentyp
+      blRec.style.display = 'block';
+      if (horseTemp !== null && horseTemp > 8){
+        blTitle.textContent = '🧥 Empfehlung: Leichte Decke (50g Fütterung)';
+        blDetail.textContent = 'Leicht kühl, trocken – eine dünn gefütterte Decke (50g) reicht. Nicht zu dick eindecken, um Schwitzen zu vermeiden.';
+      } else if (horseTemp !== null && horseTemp > 0){
+        blTitle.textContent = '🧥 Empfehlung: Mittlere Winterdecke (150g Fütterung)';
+        blDetail.textContent = 'Kalt und trocken – eine mittlere Decke (150g) hält die Pferde warm ohne zu überhitzen.';
+      } else {
+        blTitle.textContent = '🧥 Empfehlung: Dicke Winterdecke (200g+ Fütterung)';
+        blDetail.textContent = 'Sehr kalt – eine dick gefütterte Winterdecke (200g+) schützt die Muskulatur. Ggf. Halsteil.';
+      }
     }
 
     advTitle.className = 'title ' + adviceType;
@@ -376,9 +434,10 @@ function toggle(id, btn){
     let nextIdx = -1;
     for (let i = 0; i < times.length; i++){ if (new Date(times[i]).getTime() > nowMs){ nextIdx = i; break; } }
     const trendEl = document.getElementById('trend');
+    trendEl.textContent = '';
     if (nextIdx >= 1){
-      const lastTA = appH[nextIdx-1];
-      const next3 = appH.slice(nextIdx, nextIdx+3).filter(v => typeof v==='number');
+      const lastTA = hApp[nextIdx-1];
+      const next3 = hApp.slice(nextIdx, nextIdx+3).filter(v => typeof v==='number');
       if (typeof lastTA === 'number' && next3.length){
         const delta = next3.reduce((a,b)=>a+b,0)/next3.length - lastTA;
         let arrow = '▬', dir = 'konstant';
@@ -388,9 +447,9 @@ function toggle(id, btn){
         if (!(hadRainPast24 || hasRainNext10)){
           const willUp = next3.some(v => (v+HORSE_OFFSET) > OFF_THRESHOLD);
           const willDown = next3.some(v => (v+HORSE_OFFSET) <= OFF_THRESHOLD);
-          if (refHorseTemp !== null){
-            if (refHorseTemp <= OFF_THRESHOLD && willUp) msg += ' → später Decken aus möglich';
-            else if (refHorseTemp > OFF_THRESHOLD && willDown) msg += ' → später wieder eindecken';
+          if (horseTemp !== null){
+            if (horseTemp <= OFF_THRESHOLD && willUp) msg += ' → später Decken aus möglich';
+            else if (horseTemp > OFF_THRESHOLD && willDown) msg += ' → später ggf. wieder eindecken';
           }
         }
         trendEl.textContent = msg;
@@ -401,14 +460,24 @@ function toggle(id, btn){
     document.getElementById('updateTime').textContent = 'Stand: ' + now.toLocaleString('de-DE', {timeZone: tz});
 
     // ===== REITSCHULPFERDE =====
-    const schoolText = document.getElementById('schoolText');
+    const schoolEl = document.getElementById('schoolContent');
+    let schoolHtml = '<div class="sub-title">🏫 Hinweise für Reitschulpferde</div>';
+
     if (hadRainPast24 || hasRainNext10){
-      schoolText.textContent = 'Reitschulpferde tragen Decken. Nach dem Unterricht ggf. verschwitzte Decke gegen trockene tauschen – Pferde nicht nass eindecken!';
-    } else if (refHorseTemp !== null && refHorseTemp > OFF_THRESHOLD){
-      schoolText.textContent = 'Reitschulpferde können ohne Decke raus. Nach dem Unterricht: trocken führen, dann erst rausstellen.';
+      schoolHtml += '<p><strong style="color:var(--bad)">Decken sind Pflicht für Schulpferde!</strong></p>';
+      schoolHtml += '<p>Ohne Decke bei Regen/Nässe: Die Pferde verschlammen beim Wälzen. Das bedeutet für den Reitschulbetrieb massiv längere Putzzeiten – teils 30+ Minuten statt 10-15 Minuten. Die Reitzeit der Schüler verkürzt sich dadurch erheblich.</p>';
+      schoolHtml += '<p>Außerdem: Nasse Pferde auskühlen zu lassen ist ein Gesundheitsrisiko (Muskulatur, Atemwege).</p>';
+      schoolHtml += '<p>Nach dem Unterricht: Verschwitzte Decke abnehmen, Abschwitzdecke auflegen bis trocken, dann passende Decke wieder drauf. <strong>Nie ein nasses Pferd mit Winterdecke eindecken!</strong></p>';
+    } else if (adviceType === 'good'){
+      schoolHtml += '<p><strong style="color:var(--good)">Schulpferde können ohne Decke raus.</strong></p>';
+      schoolHtml += '<p>Putzzeiten bleiben normal. Nach dem Unterricht: Pferde trocken führen, dann rausstellen.</p>';
+      if (isCoatChange) schoolHtml += '<p>🔄 Im Fellwechsel profitieren gerade Schulpferde davon, sich ohne Decke wälzen und kratzen zu können – das löst das lose Fell und fördert den natürlichen Fellwechsel.</p>';
     } else {
-      schoolText.textContent = 'Reitschulpferde behalten die Decken. Nach dem Unterricht: Abschwitzdecke bis trocken, dann Winterdecke wieder drauf.';
+      schoolHtml += '<p><strong style="color:var(--warn)">Schulpferde behalten die Decken.</strong></p>';
+      schoolHtml += '<p>Trocken, aber kühl – mit Decke bleiben die Pferde sauber und die Putzzeiten kurz. Mehr Reitzeit für die Schüler.</p>';
+      schoolHtml += '<p>Nach dem Unterricht: Abschwitzdecke auflegen bis trocken, dann passende Decke (s. Empfehlung oben) wieder anziehen.</p>';
     }
+    schoolEl.innerHTML = schoolHtml;
 
     // ===== SAISON / FELLWECHSEL =====
     const seasonTitle = document.getElementById('seasonTitle');
@@ -418,39 +487,49 @@ function toggle(id, btn){
     if (month >= 2 && month <= 4){
       seasonBtnLabel.textContent = 'Frühjahrsfellwechsel (aktuell aktiv)';
       seasonTitle.textContent = '🔄 Frühjahrsfellwechsel (Februar–April)';
-      seasonText.textContent = 'Die Pferde verlieren aktuell ihre isolierende Unterwolle. Der Fellwechsel wird primär durch zunehmende Tageslichtlänge gesteuert (Melatonin/Prolaktin), nicht durch Temperatur. Die Piloerektion (Haare aufstellen = bis zu 30% mehr Isolation) funktioniert mit ausdünnendem Fell weniger effektiv.\n\nEmpfehlung: Im Fellwechsel lieber vorsichtiger eindecken. Besonders ältere Pferde und Pferde mit Cushing/PPID haben erhöhten Energiebedarf und eingeschränkte Thermoregulation.';
+      seasonText.innerHTML = 'Die Pferde verlieren ihr Winterfell und bilden das leichtere Sommerfell. Dieser Prozess wird durch die <strong>zunehmende Tageslichtlänge</strong> gesteuert (Melatonin → Prolaktin), nicht primär durch Temperatur.'
+        + '<br><br>Die natürliche Isolation ist in dieser Phase eingeschränkt – die Piloerektion (Haare aufstellen = bis zu 30% mehr Dämmwirkung) funktioniert mit dem ausdünnenden Fell weniger effektiv.'
+        + '<br><br><strong>Wichtig:</strong> Pferde haben im Fellwechsel ein starkes Bedürfnis, sich zu <strong>wälzen</strong> und gegenseitig <strong>Fellpflege</strong> zu betreiben (Knabbern, Kratzen). Dies ist essenziell, um das lose Winterfell abzustoßen. Decken verhindern dieses natürliche Verhalten!'
+        + '<br><br>⚖️ <strong>Abwägung:</strong> An trockenen, milden Tagen mit Sonnenschein (>10°C, wenig Wind) sollten die Decken bewusst weggelassen werden, damit die Pferde ihren Fellwechsel natürlich durchleben können. An kalten, nassen oder windigen Tagen überwiegt der Schutz vor Auskühlung.'
+        + '<br><br>Ältere Pferde und Pferde mit Stoffwechselerkrankungen (z.B. Cushing/PPID) haben in dieser Phase erhöhten Energiebedarf und kommen schwerer durch den Fellwechsel.';
     } else if (month >= 5 && month <= 7){
       seasonBtnLabel.textContent = 'Sommerinfo';
       seasonTitle.textContent = '☀️ Sommerzeit (Mai–Juli)';
-      seasonText.textContent = 'Die Pferde tragen leichtes Sommerfell. Die thermoneutrale Zone liegt zwischen ca. -8°C und +25°C. Über 25°C muss aktiv Wärme abgegeben werden (Schwitzen). Decken sind in der Regel nicht nötig – Hitzestau ist die größere Gefahr.';
+      seasonText.textContent = 'Sommerfell – leicht und dünn. Die thermoneutrale Zone des Pferdes reicht von ca. -8°C bis +25°C. Über 25°C wird aktiv Wärme abgegeben (Schwitzen, erhöhte Atmung). Decken sind nicht nötig – Hitzestau ist die größere Gefahr.';
     } else if (month >= 8 && month <= 10){
       seasonBtnLabel.textContent = 'Herbstfellwechsel (aktuell aktiv)';
       seasonTitle.textContent = '🍂 Herbstfellwechsel (August–Oktober)';
-      seasonText.textContent = 'Die abnehmende Tageslichtdauer signalisiert den Aufbau des Winterfells. Vorsicht: Zu frühes dauerhaftes Eindecken hemmt die Entwicklung eines dichten Winterfells, da die Decke die Haare flach drückt und die natürliche Piloerektion verhindert. Bei trockenem Wetter und Temperaturen über 5°C brauchen gesunde Pferde meist noch keine Decke.';
+      seasonText.innerHTML = 'Die abnehmende Tageslichtdauer signalisiert den Aufbau des Winterfells (Melatonin-gesteuert). Bereits einige kalte Nächte beschleunigen den Fellwuchs.'
+        + '<br><br><strong>Vorsicht beim zu frühen Eindecken:</strong> Decken drücken die Haare flach und verhindern die natürliche Piloerektion. Der Körper „merkt" weniger Kältereiz → das Winterfell wird weniger dicht ausgebildet. Die Pferde werden abhängiger von der Decke.'
+        + '<br><br>Bei trockenem Wetter über 5°C brauchen gesunde, ungeschorene Pferde meist noch keine Decke.';
     } else {
       seasonBtnLabel.textContent = 'Winterinfo';
       seasonTitle.textContent = '❄️ Winterzeit (November–Januar)';
-      seasonText.textContent = 'Volles Winterfell mit Unterwolle = hocheffizientes Isolationssystem. Piloerektion vergrößert die Isolationsschicht um bis zu 30%. Indikator: Schnee auf dem Rücken schmilzt nicht = Isolation funktioniert. Gesunde, ungeschorene Pferde mit Unterstand kommen bis ca. -8°C ohne Decke aus. ABER: Nässe + Wind ist die kritische Kombination – nasses Fell verliert fast seine gesamte Isolationswirkung.';
+      seasonText.innerHTML = 'Volles Winterfell = hocheffiziente Isolation. Piloerektion vergrößert die Dämmschicht um bis zu 30%. Indikator: Wenn Schnee auf dem Rücken liegen bleibt, funktioniert die Isolation perfekt.'
+        + '<br><br>Gesunde, ungeschorene Pferde mit Unterstand kommen bis ca. -8°C ohne Decke aus. <strong>Aber:</strong> Nässe + Wind = die kritischste Kombination. Nasses Fell verliert fast seine gesamte Isolationswirkung.'
+        + '<br><br>Geschorene Pferde, ältere Tiere und Pferde ohne Wetterschutz benötigen früher eine Decke.';
     }
 
     // ===== QUELLEN =====
     document.getElementById('sourcesContent').innerHTML = `
-      <div class="sub-title">Thermoregulation & Fellwechsel</div>
+      <div class="sub-title">Thermoregulation & Grundlagen</div>
       <p>• Dr. Margit Zeitler-Feicht, TU München:<br>
-      <a href="https://www.pm-forum-digital.de/project/thermoregulation-beim-pferd-09-2020/" target="_blank">„Thermoregulation beim Pferd" – FN PM-Forum 09/2020</a></p>
+      <a href="https://www.pm-forum-digital.de/project/thermoregulation-beim-pferd-09-2020/" target="_blank">„Thermoregulation beim Pferd" – FN PM-Forum 09/2020</a><br>
+      <span style="color:var(--muted);font-size:11px">Thermoneutrale Zone -8 bis +25°C, Piloerektion, Fellaufbau, Hautdicke</span></p>
       <p>• Kang, H. et al. (2023):<br>
       <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10267279/" target="_blank">„Heat stress in horses: a literature review" – PMC/NIH</a><br>
-      <span style="color:var(--muted);font-size:11px">Thermoneutrale Zone 5–25°C (Morgan 1998), Körpertemperatur 37,5–38,5°C</span></p>
-      <div class="sub-title">Fellwechsel & Saisonale Anpassung</div>
+      <span style="color:var(--muted);font-size:11px">Peer-reviewed; Thermoneutrale Zone 5–25°C (Morgan 1998), Kühlmechanismen, Strahlung</span></p>
+      <div class="sub-title">Fellwechsel</div>
       <p>• AGROBS Tierernährung:<br>
-      <a href="https://www.agrobs.de/de/wissen-beratung/themenwelt/der-saisonale-fellwechsel-beim-pferd-905/" target="_blank">„Der saisonale Fellwechsel beim Pferd"</a></p>
-      <p>• Pferderevue.at:<br>
+      <a href="https://www.agrobs.de/de/wissen-beratung/themenwelt/der-saisonale-fellwechsel-beim-pferd-905/" target="_blank">„Der saisonale Fellwechsel beim Pferd"</a><br>
+      <span style="color:var(--muted);font-size:11px">Melatonin/Prolaktin-Steuerung, Energiebedarf, Nährstoffe</span></p>
+      <p>• Pferderevue.at (2024):<br>
       <a href="https://www.pferderevue.at/aktuelles/gesundheit/2024/fellwechsel-beim-pferd---was-bedeutet-das-.html" target="_blank">„Fellwechsel beim Pferd – was bedeutet das?"</a></p>
-      <div class="sub-title">Eindecken – Empfehlungen</div>
+      <div class="sub-title">Eindecken & Praxis</div>
       <p>• Deutsche Reiterliche Vereinigung (FN) / PM-Forum<br>
-      <span style="color:var(--muted);font-size:11px">Individuelle Entscheidung je nach Alter, Gesundheit, Rasse, Haltung, Arbeitsumfang</span></p>
-      <p>• EquineHealthCare.de:<br>
-      <a href="https://www.equineintegration.com/horses-regulate-their-body-temperature/" target="_blank">„Thermoregulation – Eindecken ja oder nein?"</a></p>
+      <span style="color:var(--muted);font-size:11px">Individuelle Entscheidung nach Alter, Gesundheit, Rasse, Haltung, Arbeit, Schur</span></p>
+      <p>• Frohnhof Erfahrungswerte:<br>
+      <span style="color:var(--muted);font-size:11px">Sonnenschein + >10°C + wenig Wind → Decken aus; Putzzeiten-Optimierung für Reitschulbetrieb; Fellwechsel: Wälzen/Fellpflege ermöglichen</span></p>
     `;
   }
 })();
