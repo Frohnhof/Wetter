@@ -306,9 +306,14 @@
         }
 
         /* Hover Glow */
-        .course-block:hover {
+        .course-block:hover, .course-block.touch-active {
             transform: translateY(-2px) scale(1.02);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        .course-block.touch-active {
+            filter: brightness(1.08);
+            outline: 2px solid rgba(255,255,255,0.6);
+            outline-offset: -2px;
         }
 
         .course-block.ponyclub { background: linear-gradient(135deg, var(--color-ponyclub), #5aad5f); }
@@ -494,7 +499,7 @@
             justify-content: space-between;
             align-items: center;
             font-size: 14px;
-            box-shadow: 0 4px 16px rgba(45, 80, 22, 0.2);
+            box-shadow: 0 4px 16px rgba(58, 50, 38, 0.2);
         }
 
         .footer a {
@@ -657,18 +662,7 @@
         <!-- HEADER -->
         <div class="header">
             <div class="logo-container">
-                <img src="Logo_FH_transparent.png" alt="Frohnhof e.V." class="logo-img"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <svg class="fh-logo" style="display:none" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Minimalist Horse Head Line Art -->
-                    <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
-                    <path d="M35 72 C35 72, 32 55, 38 42 C42 33, 48 26, 55 22 C58 20, 62 20, 64 23 C66 26, 68 30, 66 35 C64 38, 58 40, 55 42 C52 44, 48 50, 48 55 C48 58, 50 62, 52 65 C54 68, 58 70, 60 72"
-                          stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-                    <circle cx="57" cy="30" r="1.5" fill="white"/>
-                    <path d="M55 22 C55 22, 50 18, 48 15" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-                    <path d="M58 21 C58 21, 60 16, 62 14" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-                    <text x="50" y="84" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Nunito, sans-serif" font-size="7" font-weight="600" letter-spacing="2">FH EST. 2018</text>
-                </svg>
+                <img src="Logo_FH_transparent.png" alt="Frohnhof e.V." class="logo-img">
             </div>
             <div class="header-text">
                 <h1>Kursplan Kinderreitschule Köln</h1>
@@ -913,11 +907,25 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // Touch support - prevent double-tap zoom on course blocks
+        // Mobile touch: first tap = highlight, second tap = details
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        let touchActiveBlock = null;
+        
         document.querySelectorAll('.course-block').forEach(block => {
-            block.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                showDetail(block);
+            if (isTouchDevice) {
+                block.addEventListener('touchstart', (e) => {
+                    document.querySelectorAll('.course-block.touch-active').forEach(el => el.classList.remove('touch-active'));
+                    if (touchActiveBlock === block) {
+                        showDetail(block);
+                        touchActiveBlock = null;
+                    } else {
+                        block.classList.add('touch-active');
+                        touchActiveBlock = block;
+                    }
+                }, { passive: true });
+            }
+            block.addEventListener('click', () => {
+                if (!isTouchDevice) showDetail(block);
             });
         });
     </script>
