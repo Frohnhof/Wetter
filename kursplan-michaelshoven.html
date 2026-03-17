@@ -8,14 +8,21 @@
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
 
         :root {
-            --color-ponyclub: #4CAF50;
-            --color-longe: #2196F3;
-            --color-pcmaxi: #00BCD4;
-            --color-therapie: #E91E63;
+            --color-ponyclub: #6bba70;
+            --color-ponyclub-light: #e8f5e9;
+            --color-ponyclub-glow: rgba(107, 186, 112, 0.5);
+            --color-pcmaxi: #4db6ac;
+            --color-pcmaxi-light: #e0f2f1;
+            --color-pcmaxi-glow: rgba(77, 182, 172, 0.5);
+            --color-therapie: #f06292;
+            --color-therapie-light: #fce4ec;
+            --color-therapie-glow: rgba(240, 98, 146, 0.5);
             --color-bg: #faf9f6;
             --color-header: #2d5016;
             --color-header-light: #4a7c28;
             --color-text: #333;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,14 +31,16 @@
             font-family: 'Nunito', sans-serif;
             background: var(--color-bg);
             color: var(--color-text);
+            min-height: 100vh;
         }
 
         .page {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
 
+        /* ===== HEADER ===== */
         .header {
             background: linear-gradient(135deg, var(--color-header) 0%, var(--color-header-light) 100%);
             border-radius: 16px;
@@ -41,10 +50,35 @@
             gap: 24px;
             margin-bottom: 20px;
             color: white;
-            box-shadow: 0 4px 20px rgba(45,80,22,0.3);
+            box-shadow: 0 4px 20px rgba(45, 80, 22, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
-        .header img {
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .logo-container {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .header .logo-img {
+            height: 90px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        /* SVG FH Logo Fallback */
+        .fh-logo {
+            width: 90px;
             height: 90px;
             filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
         }
@@ -64,7 +98,8 @@
 
         .header-text .standort {
             display: inline-block;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
             padding: 4px 14px;
             border-radius: 20px;
             font-size: 14px;
@@ -79,73 +114,85 @@
         }
 
         .btn {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
             color: white;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-family: inherit;
             font-size: 14px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
         }
 
-        .btn:hover { background: rgba(255,255,255,0.3); }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
 
+        /* ===== LEGEND ===== */
         .legend {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 16px;
             margin-bottom: 16px;
-            padding: 12px 16px;
-            background: white;
+            padding: 14px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 13px;
+            gap: 8px;
+            font-size: 14px;
             font-weight: 600;
+            cursor: default;
         }
 
         .legend-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
 
+        /* ===== SCHEDULE GRID ===== */
         .schedule {
             display: grid;
-            grid-template-columns: 80px repeat(3, 1fr);
+            grid-template-columns: 90px repeat(3, 1fr);
             gap: 2px;
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .schedule-header {
             background: var(--color-header);
             color: white;
-            padding: 14px 8px;
+            padding: 16px 12px;
             text-align: center;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
+            letter-spacing: 0.3px;
         }
 
         .schedule-header.time-col {
             background: #555;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .time-slot {
-            background: #f5f5f5;
-            padding: 8px 6px;
-            font-size: 12px;
+            background: #f8f8f8;
+            padding: 10px 8px;
+            font-size: 13px;
             font-weight: 700;
             text-align: center;
             display: flex;
@@ -157,63 +204,244 @@
 
         .cell {
             padding: 6px;
-            min-height: 65px;
+            min-height: 72px;
             border-bottom: 1px solid #f0f0f0;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 4px;
         }
 
+        /* ===== COURSE BLOCKS ===== */
         .course-block {
-            padding: 8px 10px;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
             font-size: 13px;
             color: white;
             font-weight: 600;
             line-height: 1.3;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .course-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+            border-radius: 10px;
         }
 
         .course-block .course-name {
             font-size: 14px;
             font-weight: 800;
+            position: relative;
         }
 
         .course-block .course-detail {
             font-size: 12px;
             font-weight: 400;
             opacity: 0.9;
+            position: relative;
         }
 
-        .course-block.ponyclub { background: var(--color-ponyclub); }
-        .course-block.longe { background: var(--color-longe); }
-        .course-block.pcmaxi { background: var(--color-pcmaxi); }
-        .course-block.therapie { background: var(--color-therapie); }
+        .course-block .course-spots {
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.85;
+            position: relative;
+            margin-top: 2px;
+        }
 
+        /* Hover Glow */
+        .course-block:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .course-block.ponyclub { background: linear-gradient(135deg, var(--color-ponyclub), #5aad5f); }
+        .course-block.ponyclub:hover { box-shadow: 0 6px 24px var(--color-ponyclub-glow); }
+
+        .course-block.pcmaxi { background: linear-gradient(135deg, var(--color-pcmaxi), #3da396); }
+        .course-block.pcmaxi:hover { box-shadow: 0 6px 24px var(--color-pcmaxi-glow); }
+
+        .course-block.therapie { background: linear-gradient(135deg, var(--color-therapie), #e04882); }
+        .course-block.therapie:hover { box-shadow: 0 6px 24px var(--color-therapie-glow); }
+
+        /* Active/Pressed */
+        .course-block:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* ===== DETAIL MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .modal-time {
+            font-size: 14px;
+            color: #888;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .modal-desc {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .modal-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .modal-badge.spots {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .modal-badge.day {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .modal-badge.age {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .modal-color-bar {
+            height: 4px;
+            border-radius: 2px;
+            margin-bottom: 20px;
+        }
+
+        /* ===== COURSE INFO CARDS ===== */
         .course-info {
             margin-top: 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
         }
 
         .info-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            border-left: 4px solid;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            border-left: 5px solid;
+            transition: all 0.3s ease;
         }
 
-        .info-card h3 { font-size: 15px; margin-bottom: 6px; }
-        .info-card p { font-size: 13px; color: #666; line-height: 1.5; }
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .info-card p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
         .info-card.ponyclub { border-color: var(--color-ponyclub); }
         .info-card.pcmaxi { border-color: var(--color-pcmaxi); }
         .info-card.therapie { border-color: var(--color-therapie); }
 
+        /* ===== FOOTER ===== */
         .footer {
             margin-top: 20px;
-            background: var(--color-header);
+            background: linear-gradient(135deg, var(--color-header) 0%, var(--color-header-light) 100%);
             border-radius: 12px;
             padding: 20px 32px;
             color: white;
@@ -221,26 +449,161 @@
             justify-content: space-between;
             align-items: center;
             font-size: 14px;
+            box-shadow: 0 4px 16px rgba(45, 80, 22, 0.2);
         }
 
-        .footer a { color: #a8d88a; text-decoration: none; }
+        .footer a {
+            color: #a8d88a;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover { color: #c8f0aa; }
         .footer-note { font-size: 12px; opacity: 0.7; }
 
-        @media print {
-            body { background: white; }
-            .page { padding: 0; max-width: 100%; }
-            .header { border-radius: 0; margin-bottom: 10px; padding: 16px 20px; }
-            .header img { height: 60px; }
-            .header-actions { display: none; }
-            .schedule { border-radius: 0; box-shadow: none; }
-            .footer { border-radius: 0; margin-top: 10px; }
-            .legend { box-shadow: none; border: 1px solid #ddd; }
-            .no-print { display: none; }
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
+        .header { animation: fadeInUp 0.6s ease-out; }
+        .legend { animation: fadeInUp 0.6s ease-out 0.1s both; }
+        .schedule { animation: fadeInUp 0.6s ease-out 0.2s both; }
+        .course-info { animation: fadeInUp 0.6s ease-out 0.3s both; }
+        .footer { animation: fadeInUp 0.6s ease-out 0.4s both; }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .page {
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .header {
+                border-radius: 0;
+                margin-bottom: 10px;
+                padding: 14px 20px;
+                box-shadow: none;
+            }
+
+            .header .logo-img,
+            .header .fh-logo {
+                height: 55px;
+                width: auto;
+            }
+
+            .header-text h1 { font-size: 22px; }
+            .header-actions { display: none; }
+
+            .legend {
+                backdrop-filter: none;
+                box-shadow: none;
+                border: 1px solid #ddd;
+                padding: 8px 14px;
+                margin-bottom: 10px;
+            }
+
+            .schedule {
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .schedule-header { padding: 10px 8px; font-size: 14px; }
+            .cell { min-height: 55px; }
+
+            .course-block {
+                box-shadow: none !important;
+                cursor: default;
+            }
+
+            .course-block:hover {
+                transform: none;
+                box-shadow: none !important;
+            }
+
+            .course-info {
+                margin-top: 10px;
+                gap: 8px;
+            }
+
+            .info-card {
+                backdrop-filter: none;
+                box-shadow: none;
+                border: 1px solid #ddd;
+                padding: 12px;
+            }
+
+            .info-card:hover { transform: none; }
+
+            .footer {
+                border-radius: 0;
+                margin-top: 10px;
+                padding: 12px 20px;
+                box-shadow: none;
+            }
+
+            .no-print { display: none !important; }
+            .modal-overlay { display: none !important; }
+
+            * { animation: none !important; }
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .header { flex-direction: column; text-align: center; padding: 16px; }
+            .page { padding: 12px; }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 18px;
+                gap: 12px;
+            }
+
             .header-actions { margin-left: 0; }
+            .header-text h1 { font-size: 22px; }
+
+            .schedule {
+                grid-template-columns: 70px repeat(3, 1fr);
+                font-size: 12px;
+            }
+
+            .schedule-header { padding: 10px 6px; font-size: 13px; }
+            .cell { min-height: 55px; padding: 4px; }
+
+            .course-block {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            .course-block .course-name { font-size: 12px; }
+            .course-block .course-detail { font-size: 10px; }
+            .course-block .course-spots { font-size: 9px; }
+
+            .course-info {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+
+            .footer div:last-child { text-align: center; }
+
+            .legend { gap: 10px; }
         }
     </style>
 </head>
@@ -248,7 +611,20 @@
     <div class="page">
         <!-- HEADER -->
         <div class="header">
-            <img src="Logo_Kinderreitschule_Koeln_trans.png" alt="Kinderreitschule Köln" id="logo">
+            <div class="logo-container">
+                <img src="Logo_FH_transparent.png" alt="Frohnhof e.V." class="logo-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <svg class="fh-logo" style="display:none" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Minimalist Horse Head Line Art -->
+                    <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+                    <path d="M35 72 C35 72, 32 55, 38 42 C42 33, 48 26, 55 22 C58 20, 62 20, 64 23 C66 26, 68 30, 66 35 C64 38, 58 40, 55 42 C52 44, 48 50, 48 55 C48 58, 50 62, 52 65 C54 68, 58 70, 60 72"
+                          stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                    <circle cx="57" cy="30" r="1.5" fill="white"/>
+                    <path d="M55 22 C55 22, 50 18, 48 15" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                    <path d="M58 21 C58 21, 60 16, 62 14" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                    <text x="50" y="84" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Nunito, sans-serif" font-size="7" font-weight="600" letter-spacing="2">FH EST. 2018</text>
+                </svg>
+            </div>
             <div class="header-text">
                 <h1>Kursplan Kinderreitschule Köln</h1>
                 <div class="subtitle">Frohnhof e.V. – Inklusive Kinderreitschule</div>
@@ -261,14 +637,14 @@
 
         <!-- LEGENDE -->
         <div class="legend">
-            <div class="legend-item"><div class="legend-dot" style="background:var(--color-ponyclub)"></div> Ponyclub</div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--color-pcmaxi)"></div> PC-Maxi / Longe</div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--color-therapie)"></div> Therapie</div>
+            <div class="legend-item"><div class="legend-dot" style="background: var(--color-ponyclub)"></div> Ponyclub</div>
+            <div class="legend-item"><div class="legend-dot" style="background: var(--color-pcmaxi)"></div> PC-Maxi / Longe</div>
+            <div class="legend-item"><div class="legend-dot" style="background: var(--color-therapie)"></div> Therapie / Regenwald</div>
         </div>
 
         <!-- STUNDENPLAN -->
         <div class="schedule">
-            <!-- Header -->
+            <!-- Header Row -->
             <div class="schedule-header time-col">Uhrzeit</div>
             <div class="schedule-header">Freitag</div>
             <div class="schedule-header">Samstag</div>
@@ -278,9 +654,10 @@
             <div class="time-slot">10:00</div>
             <div class="cell"></div>
             <div class="cell">
-                <div class="course-block ponyclub">
-                    <div class="course-name">Ponyclub</div>
+                <div class="course-block ponyclub" onclick="showDetail(this)" data-course="ponyclub" data-time="10:00 – 11:00" data-day="Samstag" data-spots="6">
+                    <div class="course-name">🐴 Ponyclub</div>
                     <div class="course-detail">10:00 – 11:00</div>
+                    <div class="course-spots">👧 6 Kinder</div>
                 </div>
             </div>
             <div class="cell"></div>
@@ -289,15 +666,17 @@
             <div class="time-slot">11:00</div>
             <div class="cell"></div>
             <div class="cell">
-                <div class="course-block ponyclub">
-                    <div class="course-name">Ponyclub</div>
-                    <div class="course-detail">11:15</div>
+                <div class="course-block ponyclub" onclick="showDetail(this)" data-course="ponyclub" data-time="11:15 – 12:15" data-day="Samstag" data-spots="6">
+                    <div class="course-name">🐴 Ponyclub</div>
+                    <div class="course-detail">11:15 – 12:15</div>
+                    <div class="course-spots">👧 6 Kinder</div>
                 </div>
             </div>
             <div class="cell">
-                <div class="course-block pcmaxi">
-                    <div class="course-name">PC-Maxi Longe</div>
-                    <div class="course-detail">11:00</div>
+                <div class="course-block pcmaxi" onclick="showDetail(this)" data-course="pcmaxi" data-time="11:00 – 12:00" data-day="Sonntag" data-spots="4">
+                    <div class="course-name">🏇 PC-Maxi Longe</div>
+                    <div class="course-detail">11:00 – 12:00</div>
+                    <div class="course-spots">👧 4 Kinder</div>
                 </div>
             </div>
 
@@ -305,15 +684,17 @@
             <div class="time-slot">12:00</div>
             <div class="cell"></div>
             <div class="cell">
-                <div class="course-block ponyclub">
-                    <div class="course-name">Ponyclub</div>
-                    <div class="course-detail">12:30</div>
+                <div class="course-block ponyclub" onclick="showDetail(this)" data-course="ponyclub" data-time="12:30 – 13:30" data-day="Samstag" data-spots="6">
+                    <div class="course-name">🐴 Ponyclub</div>
+                    <div class="course-detail">12:30 – 13:30</div>
+                    <div class="course-spots">👧 6 Kinder</div>
                 </div>
             </div>
             <div class="cell">
-                <div class="course-block pcmaxi">
-                    <div class="course-name">PC-Maxi Longe</div>
-                    <div class="course-detail">12:00</div>
+                <div class="course-block pcmaxi" onclick="showDetail(this)" data-course="pcmaxi" data-time="12:00 – 13:00" data-day="Sonntag" data-spots="4">
+                    <div class="course-name">🏇 PC-Maxi Longe</div>
+                    <div class="course-detail">12:00 – 13:00</div>
+                    <div class="course-spots">👧 4 Kinder</div>
                 </div>
             </div>
 
@@ -322,18 +703,20 @@
             <div class="cell"></div>
             <div class="cell"></div>
             <div class="cell">
-                <div class="course-block ponyclub">
-                    <div class="course-name">Ponyclub</div>
-                    <div class="course-detail">13:00</div>
+                <div class="course-block ponyclub" onclick="showDetail(this)" data-course="ponyclub" data-time="13:00 – 14:00" data-day="Sonntag" data-spots="4">
+                    <div class="course-name">🐴 Ponyclub</div>
+                    <div class="course-detail">13:00 – 14:00</div>
+                    <div class="course-spots">👧 4 Kinder</div>
                 </div>
             </div>
 
             <!-- 14:00 -->
             <div class="time-slot">14:00</div>
             <div class="cell">
-                <div class="course-block therapie">
-                    <div class="course-name">Therapie</div>
-                    <div class="course-detail">14:00 – 15:00 · Regenwald</div>
+                <div class="course-block therapie" onclick="showDetail(this)" data-course="therapie" data-time="14:00 – 15:00" data-day="Freitag" data-spots="–">
+                    <div class="course-name">💚 Therapie</div>
+                    <div class="course-detail">14:00 – 15:00</div>
+                    <div class="course-spots">Projekt Regenwald</div>
                 </div>
             </div>
             <div class="cell"></div>
@@ -342,9 +725,10 @@
             <!-- 15:45 -->
             <div class="time-slot">15:45</div>
             <div class="cell">
-                <div class="course-block ponyclub">
-                    <div class="course-name">Ponyclub</div>
-                    <div class="course-detail">15:45</div>
+                <div class="course-block ponyclub" onclick="showDetail(this)" data-course="ponyclub" data-time="15:45 – 16:45" data-day="Freitag" data-spots="6">
+                    <div class="course-name">🐴 Ponyclub</div>
+                    <div class="course-detail">15:45 – 16:45</div>
+                    <div class="course-spots">👧 6 Kinder</div>
                 </div>
             </div>
             <div class="cell"></div>
@@ -353,9 +737,10 @@
             <!-- 17:00 -->
             <div class="time-slot">17:00</div>
             <div class="cell">
-                <div class="course-block ponyclub">
-                    <div class="course-name">Ponyclub</div>
-                    <div class="course-detail">17:00</div>
+                <div class="course-block ponyclub" onclick="showDetail(this)" data-course="ponyclub" data-time="17:00 – 18:00" data-day="Freitag" data-spots="6">
+                    <div class="course-name">🐴 Ponyclub</div>
+                    <div class="course-detail">17:00 – 18:00</div>
+                    <div class="course-spots">👧 6 Kinder</div>
                 </div>
             </div>
             <div class="cell"></div>
@@ -370,11 +755,11 @@
             </div>
             <div class="info-card pcmaxi">
                 <h3>🏇 PC-Maxi / Longe</h3>
-                <p>Für fortgeschrittene Ponyclub-Kinder. Einzelunterricht an der Longe kombiniert mit mehr Eigenständigkeit. Fokus auf Balance, Haltung und erste Bahnfiguren.</p>
+                <p>Für fortgeschrittene Ponyclub-Kinder. Einzelunterricht an der Longe mit Fokus auf Balance, Haltung und Vertrauen. Mehr Eigenständigkeit und erste Bahnfiguren.</p>
             </div>
             <div class="info-card therapie">
-                <h3>💚 Therapie (Regenwald)</h3>
-                <p>Pferdegestützte therapeutische und pädagogische Förderung. In Zusammenarbeit mit dem Projekt Regenwald – inklusive Einzelförderung für Kinder und Jugendliche.</p>
+                <h3>💚 Therapie / Regenwald</h3>
+                <p>Pferdegestützte Förderung in Kooperation mit dem Projekt Regenwald. Therapeutische Angebote für Kinder mit besonderem Förderbedarf. Individuelle Betreuung.</p>
             </div>
         </div>
 
@@ -385,11 +770,99 @@
                 Standort Michaelshoven<br>
                 📞 0159 0173 9358 · ✉️ <a href="mailto:s.mueller@frohnhof-koeln.de">s.mueller@frohnhof-koeln.de</a>
             </div>
-            <div style="text-align:right">
+            <div style="text-align: right">
                 <div class="footer-note">Änderungen vorbehalten · Stand: März 2026</div>
                 <div class="footer-note">🌐 <a href="https://kinderreitschule-koeln.de">kinderreitschule-koeln.de</a></div>
             </div>
         </div>
     </div>
+
+    <!-- DETAIL MODAL -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-color-bar" id="modalColorBar"></div>
+            <div class="modal-icon" id="modalIcon"></div>
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-time" id="modalTime"></div>
+            <div class="modal-desc" id="modalDesc"></div>
+            <div class="modal-meta" id="modalMeta"></div>
+        </div>
+    </div>
+
+    <script>
+        // Course data
+        const courseData = {
+            ponyclub: {
+                icon: '🐴',
+                title: 'Ponyclub',
+                desc: 'Spielerischer Einstieg für Kinder ab 4 Jahren. Putzen, Führen, erstes Sitzen auf dem Pony. In kleinen Gruppen lernen die Kinder den respektvollen Umgang mit dem Pferd.',
+                color: '#6bba70',
+                age: 'Ab 4 Jahren'
+            },
+            pcmaxi: {
+                icon: '🏇',
+                title: 'PC-Maxi / Longe',
+                desc: 'Für fortgeschrittene Ponyclub-Kinder mit Einzelunterricht an der Longe. Fokus auf Balance, Haltung und Vertrauen. Mehr Eigenständigkeit und erste Bahnfiguren.',
+                color: '#4db6ac',
+                age: 'Fortgeschrittene'
+            },
+            therapie: {
+                icon: '💚',
+                title: 'Therapie / Regenwald',
+                desc: 'Pferdegestützte Förderung in Kooperation mit dem Projekt Regenwald. Therapeutische Angebote für Kinder mit besonderem Förderbedarf. Individuelle Betreuung durch Fachkräfte.',
+                color: '#f06292',
+                age: 'Nach Absprache'
+            }
+        };
+
+        function showDetail(el) {
+            const course = el.dataset.course;
+            const data = courseData[course];
+            if (!data) return;
+
+            document.getElementById('modalColorBar').style.background = data.color;
+            document.getElementById('modalIcon').textContent = data.icon;
+            document.getElementById('modalTitle').textContent = data.title;
+            document.getElementById('modalTime').textContent = el.dataset.day + ' · ' + el.dataset.time;
+            document.getElementById('modalDesc').textContent = data.desc;
+
+            const spots = el.dataset.spots;
+            let metaHTML = `
+                <div class="modal-badge day">📅 ${el.dataset.day}</div>
+                <div class="modal-badge age">👶 ${data.age}</div>
+            `;
+            if (spots !== '–') {
+                metaHTML += `<div class="modal-badge spots">👧 ${spots} Plätze</div>`;
+            }
+            document.getElementById('modalMeta').innerHTML = metaHTML;
+
+            const overlay = document.getElementById('modalOverlay');
+            overlay.style.display = 'flex';
+            // Force reflow for animation
+            overlay.offsetHeight;
+            overlay.classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const overlay = document.getElementById('modalOverlay');
+            overlay.classList.remove('active');
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
+        }
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Touch support - prevent double-tap zoom on course blocks
+        document.querySelectorAll('.course-block').forEach(block => {
+            block.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                showDetail(block);
+            });
+        });
+    </script>
 </body>
 </html>
