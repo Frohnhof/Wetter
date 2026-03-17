@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kursplan – Kinderreitschule Köln | Standort Michaelshoven</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
         :root {
             --color-ponyclub: #6bba70;
@@ -17,9 +17,9 @@
             --color-therapie: #f06292;
             --color-therapie-light: #fce4ec;
             --color-therapie-glow: rgba(240, 98, 146, 0.5);
-            --color-bg: #faf9f6;
-            --color-header: #2d5016;
-            --color-header-light: #4a7c28;
+            --color-bg: #f8f6f3;
+            --color-header: #3a3226;
+            --color-header-light: #5a4d3c;
             --color-text: #333;
             --glass-bg: rgba(255, 255, 255, 0.7);
             --glass-border: rgba(255, 255, 255, 0.4);
@@ -28,7 +28,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Nunito', sans-serif;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--color-bg);
             color: var(--color-text);
             min-height: 100vh;
@@ -50,7 +50,7 @@
             gap: 24px;
             margin-bottom: 20px;
             color: white;
-            box-shadow: 0 4px 20px rgba(45, 80, 22, 0.3);
+            box-shadow: 0 4px 20px rgba(58, 50, 38, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -72,14 +72,14 @@
         }
 
         .header .logo-img {
-            height: 90px;
-            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+            height: 160px;
+            filter: brightness(0) invert(1) drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
         }
 
         /* SVG FH Logo Fallback */
         .fh-logo {
-            width: 90px;
-            height: 90px;
+            width: 160px;
+            height: 160px;
             filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
         }
 
@@ -682,11 +682,13 @@
 
         <!-- FOTO-GALERIE -->
         <div class="photo-strip">
-          <div class="photo-card"><img src="photo_unterricht.jpg" alt="Reitunterricht"><div class="photo-label">Reitunterricht</div></div>
-          <div class="photo-card"><img src="photo_team.jpg" alt="Unser Team"><div class="photo-label">Unser Team</div></div>
           <div class="photo-card"><img src="photo_dressur.jpg" alt="Dressur"><div class="photo-label">Dressur</div></div>
-          <div class="photo-card"><img src="photo_springen.jpg" alt="Springen"><div class="photo-label">Springen</div></div>
+          <div class="photo-card"><img src="photo_team.jpg" alt="Unser Team"><div class="photo-label">Unser Team</div></div>
           <div class="photo-card"><img src="photo_turnier.jpg" alt="Turniererfolge"><div class="photo-label">Turniererfolge</div></div>
+          <div class="photo-card"><img src="photo_unterricht.jpg" alt="Reitunterricht"><div class="photo-label">Reitunterricht</div></div>
+          <div class="photo-card"><img src="photo_springen.jpg" alt="Springen"><div class="photo-label">Springen</div></div>
+          <div class="photo-card"><img src="photo_pflege.jpg" alt="Pferdepflege"><div class="photo-label">Pferdepflege</div></div>
+          <div class="photo-card"><img src="photo_therapie.jpg" alt="Therapie"><div class="photo-label">Therapie</div></div>
           <div class="photo-card"><img src="photo_alltag.jpg" alt="Stallalltag"><div class="photo-label">Stallalltag</div></div>
         </div>
 
