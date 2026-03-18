@@ -797,254 +797,155 @@ body {
 </div>
 
 <script>
-const TYPES = {
-  ponyclub:     { emoji:'🐴', label:'Ponyclub',       color:'#6bba70', bg:'rgba(107,186,112,0.10)', desc:'Spielerischer Einstieg ab 4 Jahren. Putzen, Führen, erstes Sitzen.' },
-  pcmaxi:       { emoji:'🏇', label:'PC-Maxi',        color:'#4db6ac', bg:'rgba(77,182,172,0.10)',  desc:'Fortgeschrittene Ponyclub-Kinder. Bodenarbeit, freies Reiten.' },
-  longe:        { emoji:'🔄', label:'Longe',           color:'#64b5f6', bg:'rgba(100,181,246,0.10)', desc:'Einzelunterricht an der Longe. Balance, Haltung, Vertrauen.' },
-  freireiter:   { emoji:'🌟', label:'Freireiter',      color:'#ffb74d', bg:'rgba(255,183,77,0.10)',  desc:'Eigenständiges Reiten in der Gruppe. Bahnfiguren und Tempi.' },
-  frteam:       { emoji:'🏆', label:'FR Team',         color:'#ba68c8', bg:'rgba(186,104,200,0.10)', desc:'Fortgeschrittene Reitergruppe. Dressurlektionen und Teamarbeit.' },
-  kjp:          { emoji:'💚', label:'KJP / Therapie',  color:'#f06292', bg:'rgba(240,98,146,0.10)',  desc:'Pferdegestützte therapeutische Förderung mit Fachkräften.' },
-  beritt:       { emoji:'🐎', label:'Beritt & Longe',  color:'#a1887f', bg:'rgba(161,136,127,0.10)', desc:'Professionelles Training der Schulpferde.' },
-  springstunde: { emoji:'🏅', label:'Springstunde',    color:'#e57373', bg:'rgba(229,115,115,0.10)', desc:'Springgymnastik und Parcourstraining.' },
-  erwachsene:   { emoji:'🧑', label:'Erwachsene',      color:'#90a4ae', bg:'rgba(144,164,174,0.10)', desc:'Reitunterricht für Erwachsene.' }
+// ═══════ SUPABASE CONFIG ═══════
+const SUPABASE_URL = 'https://jktrkwzqtyhhuxsbvvwa.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprdHJrd3pxdHloaHV4c2J2dndhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODM4MDIsImV4cCI6MjA4OTM1OTgwMn0.qxCXhH7huZv2QxzkI4fgWzy_Rnhd7gkm7y8oAuIFC_Q';
+
+// Kurstyp-Farben und Details (Fallback + Ergänzungen)
+const TYPE_EXTRAS = {
+  ponyclub:     { bg:'rgba(107,186,112,0.10)' },
+  pcmaxi:       { bg:'rgba(77,182,172,0.10)' },
+  longe:        { bg:'rgba(100,181,246,0.10)' },
+  freireiter:   { bg:'rgba(255,183,77,0.10)' },
+  frteam:       { bg:'rgba(186,104,200,0.10)' },
+  kjp:          { bg:'rgba(240,98,146,0.10)' },
+  beritt:       { bg:'rgba(161,136,127,0.10)' },
+  springstunde: { bg:'rgba(229,115,115,0.10)' },
+  erwachsene:   { bg:'rgba(144,164,174,0.10)' },
 };
 
-/* kids: [{name, horse, cancelled}] – aus Excel + Platzhalter-Pferde */
-const SCHEDULE = [
-  { day:'Montag', slots:[
-    { type:'kjp', time:'13:15 – 14:45', label:'Förderschule', max:null, filled:null, trainer:'(Platzhalter)', kids:[] },
-    { type:'longe', time:'15:30 – 16:30', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Vollmann, Emma', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Wuppermann, Greta', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Verhülsdonk, Emilia', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'longe', time:'16:30 – 17:30', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Reutersberg, Sophie', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Oster, Emily', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Richter, Fine', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'frteam', time:'17:30 – 18:30', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Richter, Clara', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Wershoven, Zoe', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Schurer, Pia', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Schurer, Emmi', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Rellecke, Luzie', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Werner, Nike', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'erwachsene', time:'18:30 – 19:30', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Dickomeit (RB Dakota)', horse:'Dakota', cancelled:false},
-    ]},
-  ]},
-  { day:'Dienstag', slots:[
-    { type:'beritt', time:'11:00', max:null, filled:null, trainer:'(Platzhalter)', kids:[] },
-    { type:'longe', time:'15:00 – 16:00', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Metzen, Emilia', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Thielscher, Lina', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Köhler, Marie', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'longe', time:'16:00 – 17:00', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Fröhlich, Nellie', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Bärenz, Clara', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Dreher, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'frteam', time:'17:00 – 17:45', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Lohrmann, Tiara', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Wilke, Emma', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Horstmann, Tilda', horse:'(Pferd zuweisen)', cancelled:true},
-      {name:'Odenthal, Ella', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Peterhänsel, Kiran', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Höddinghaus, Franzi', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'springstunde', time:'17:45 – 18:30', max:null, filled:null, trainer:'(Platzhalter)', kids:[] },
-  ]},
-  { day:'Mittwoch', slots:[
-    { type:'ponyclub', time:'15:00 – 16:00', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Ebner, Carla', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Busanel, Anna', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Bukowickie, Mila', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Alberts, Mina', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Weinmann, Mieke', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'ponyclub', time:'16:15 – 17:15', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Weinmann, Fine', horse:'(Pferd zuweisen)', cancelled:true},
-      {name:'Bader, Mia Charlott', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Wunsch, Mila', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Lenhardt, Mia', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'König, Emilio', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Turner, Matilda', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'frteam', time:'17:45 – 18:45', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Buttler, Mica', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Wittling, Amy', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Knüpling, Lucy', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Havranek, Annabelle', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Protschka, Mina', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Merkamp, Katharina', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-  ]},
-  { day:'Donnerstag', slots:[
-    { type:'longe', time:'15:30 – 16:30', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Dickomeit, Lilly', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Gotthardt, Zoey', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Buchsot, Milla', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'freireiter', time:'16:30 – 17:15', max:4, trainer:'(Platzhalter)', kids:[
-      {name:'Umlauff, Johanna', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Schumacher, Ida', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Wilke, Emma', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Binder, Elsa', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'freireiter', time:'17:15 – 18:00', max:4, trainer:'(Platzhalter)', kids:[
-      {name:'Limp, Hannah', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Moritz, Marlene', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Schwarz, Leo', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Byrne, Johanna', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'erwachsene', time:'18:00 – 18:45', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Byrne, Constanze', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Schurer, Jessica', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Dickomeit, Kristina', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-  ]},
-  { day:'Freitag', slots:[
-    { type:'kjp', time:'09:00 – 10:30', max:null, filled:null, trainer:'(Platzhalter)', kids:[] },
-    { type:'longe', time:'14:15 – 15:00', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Lotta', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Makoi, Lina', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Scheffer, Mina', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'longe', time:'15:00 – 16:00', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Haaß, Louisa', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Brack, Josephine', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Kowalewski, Lara', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'longe', time:'16:00 – 17:00', max:3, label:'Longe (Zaubi)', trainer:'(Platzhalter)', kids:[
-      {name:'Skultety, Cataleya', horse:'Zaubi', cancelled:false},
-      {name:'Esser, Alexia', horse:'Zaubi', cancelled:false},
-      {name:'Militello, Alessia-Francesca', horse:'Zaubi', cancelled:false},
-    ]},
-    { type:'frteam', time:'17:00 – 18:00', max:5, trainer:'(Platzhalter)', kids:[
-      {name:'Rother, Thea', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Überschaer, Mila', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Li, Haixin', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Ach, Johanna', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-  ]},
-  { day:'Samstag', slots:[
-    { type:'ponyclub', time:'10:00 – 11:00', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Blümke, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Blümke, Viktoria', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Michelbrink, Malia', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Bratke, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Brendel-Möltgen, Lilli', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Lambrecht, Annabella', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'pcmaxi', time:'10:30 – 12:00', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Morawietz, Greta', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Steker, Catalina', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Scheunemann, Hannah', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Sufiani, Noelle', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'longe', time:'11:15 – 12:15', max:3, trainer:'(Platzhalter)', kids:[
-      {name:'Krause, Mila', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Stark, Penelope', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Deelmann, Emma', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'ponyclub', time:'12:30 – 13:30', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Jahn, Greta', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Weitz, Lina', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Dreßel/Rode, Mina', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Geloneck, Emily', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Dürfeld-Heiming, Amelie', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Dreßel/Rode, Tilda', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'ponyclub', time:'13:45 – 14:45', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Bosse, Isabelle', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'vom Hofe, Johanna', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Klinge, Emilia', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Labusga, Mila', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Streich, Clara', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Aretz, Fiete', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'ponyclub', time:'15:00 – 16:00', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Hackl, Sophia', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Odenthal, Romy', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Schüller, Tilda', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Fiebig, Matilda', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Klein, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Collier, Chiara', horse:'(Pferd zuweisen)', cancelled:false},
-    ]},
-    { type:'ponyclub', time:'16:15 – 17:15', max:6, trainer:'(Platzhalter)', kids:[
-      {name:'Schillberg, Noemi', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Heyden, Greta', horse:'(Pferd zuweisen)', cancelled:true},
-      {name:'Megid, Marie', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Strezoski, Charlotte', horse:'(Pferd zuweisen)', cancelled:false},
-      {name:'Schilling, Klara', horse:'(Pferd zuweisen)', cancelled:true},
-    ]},
-  ]}
-];
+const WOCHENTAGE = ['', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
 
-function getFilled(slot) {
-  if (slot.filled !== undefined && slot.filled !== null) return slot.filled;
-  if (slot.kids) return slot.kids.filter(k => !k.cancelled).length;
-  return null;
+async function fetchKursplan() {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/v_kursplan?standort=eq.esch&order=wochentag,uhrzeit_start`,
+    { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+  );
+  if (!res.ok) throw new Error(`API Error: ${res.status}`);
+  return res.json();
 }
 
-function getAmpel(slot) {
-  const max = slot.max;
-  const filled = getFilled(slot);
-  if (max === null || filled === null) return '';
-  const free = max - filled;
-  if (free <= 0) return 'red';
-  if (free === 1) return 'yellow';
-  return 'green';
+function formatTime(start, end) {
+  const s = start ? start.substring(0,5) : '';
+  const e = end ? end.substring(0,5) : '';
+  return e ? `${s} – ${e}` : s;
 }
 
-function getAmpelText(slot) {
-  const max = slot.max;
-  const filled = getFilled(slot);
-  if (max === null || filled === null) return '';
-  const free = max - filled;
-  if (free <= 0) return 'Ausgebucht';
-  if (free === 1) return '1 Platz frei';
-  return `${free} Plätze frei`;
+function buildSchedule(data) {
+  const TYPES = {};
+  const dayMap = {};
+
+  data.forEach(k => {
+    // Build TYPES from DB
+    if (!TYPES[k.typ_kuerzel]) {
+      TYPES[k.typ_kuerzel] = {
+        emoji: k.emoji,
+        label: k.typ_name,
+        color: k.farbe,
+        bg: (TYPE_EXTRAS[k.typ_kuerzel] || {}).bg || 'rgba(0,0,0,0.05)',
+        desc: k.beschreibung
+      };
+    }
+
+    const dayName = WOCHENTAGE[k.wochentag];
+    if (!dayMap[dayName]) dayMap[dayName] = { day: dayName, wochentag: k.wochentag, slots: [] };
+
+    dayMap[dayName].slots.push({
+      type: k.typ_kuerzel,
+      time: formatTime(k.uhrzeit_start, k.uhrzeit_ende),
+      label: k.notizen || null,
+      max: k.max_teilnehmer,
+      filled: k.belegt,
+      ampel: k.ampel,
+      trainer: null,  // Will come from authenticated API later
+      kids: []        // Public version: no kids
+    });
+  });
+
+  // Sort by wochentag
+  return { 
+    TYPES, 
+    SCHEDULE: Object.values(dayMap).sort((a, b) => a.wochentag - b.wochentag)
+  };
 }
 
-const grid = document.getElementById('grid');
+// ═══════ RENDER ═══════
+async function renderKursplan() {
+  const grid = document.getElementById('grid');
+  
+  // Show loading state
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);">⏳ Kursplan wird geladen...</div>';
 
-SCHEDULE.forEach(day => {
-  const col = document.createElement('div');
-  col.className = 'day-col';
-  const totalSlots = day.slots.length;
-  col.innerHTML = `
-    <div class="day-header">
-      <h3>${day.day}</h3>
-      <div class="day-count">${totalSlots} Kurs${totalSlots !== 1 ? 'e' : ''}</div>
-    </div>
-    <div class="day-slots">
-      ${day.slots.map((s, idx) => {
-        const t = TYPES[s.type];
-        const filled = getFilled(s);
-        const ampel = getAmpel(s);
-        const spotsText = s.max ? `${filled || 0}/${s.max}` : '';
-        return `
-          <div class="course-block cb-${s.type}"
-               data-slot-day="${day.day}" data-slot-idx="${idx}"
-               role="button" tabindex="0">
-            <div class="course-top">
-              <span class="course-time">${s.time}</span>
-              ${ampel ? `<span class="ampel ${ampel}" title="${getAmpelText(s)}"></span>` : ''}
-            </div>
-            <div class="course-name-row">
-              <span class="course-emoji">${t.emoji}</span>
-              <span class="course-name">${s.label || t.label}</span>
-            </div>
-            ${spotsText ? `<div class="course-spots">${spotsText} belegt</div>` : ''}
-          </div>`;
-      }).join('')}
-    </div>`;
-  grid.appendChild(col);
-});
+  let data;
+  try {
+    data = await fetchKursplan();
+  } catch (err) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--red);">❌ Fehler beim Laden: ${err.message}</div>`;
+    return;
+  }
+
+  const { TYPES, SCHEDULE } = buildSchedule(data);
+  grid.innerHTML = '';
+
+  SCHEDULE.forEach(day => {
+    const col = document.createElement('div');
+    col.className = 'day-col';
+    const totalSlots = day.slots.length;
+    col.innerHTML = `
+      <div class="day-header">
+        <h3>${day.day}</h3>
+        <div class="day-count">${totalSlots} Kurs${totalSlots !== 1 ? 'e' : ''}</div>
+      </div>
+      <div class="day-slots">
+        ${day.slots.map((s, idx) => {
+          const t = TYPES[s.type];
+          const filled = s.filled || 0;
+          const ampel = s.ampel || '';
+          const ampelText = !s.max ? '' : (s.max - filled <= 0 ? 'Ausgebucht' : s.max - filled === 1 ? '1 Platz frei' : `${s.max - filled} Plätze frei`);
+          const spotsText = s.max ? `${filled}/${s.max}` : '';
+          return `
+            <div class="course-block cb-${s.type}"
+                 data-slot-day="${day.day}" data-slot-idx="${idx}"
+                 role="button" tabindex="0">
+              <div class="course-top">
+                <span class="course-time">${s.time}</span>
+                ${ampel ? `<span class="ampel ${ampel}" title="${ampelText}"></span>` : ''}
+              </div>
+              <div class="course-name-row">
+                <span class="course-emoji">${t.emoji}</span>
+                <span class="course-name">${s.label || t.label}</span>
+              </div>
+              ${spotsText ? `<div class="course-spots">${spotsText} belegt</div>` : ''}
+            </div>`;
+        }).join('')}
+      </div>`;
+    grid.appendChild(col);
+  });
+
+  // Store for modal access
+  window._TYPES = TYPES;
+  window._SCHEDULE = SCHEDULE;
+
+  // Attach event listeners
+  attachCourseListeners();
+}
+
+function attachCourseListeners() {
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  let touchActive = null;
+
+  document.querySelectorAll('.course-block').forEach(b => {
+    if (isTouch) {
+      b.addEventListener('touchstart', () => {
+        document.querySelectorAll('.course-block.touch-active').forEach(el => el.classList.remove('touch-active'));
+        if (touchActive === b) { openModal(b); touchActive = null; }
+        else { b.classList.add('touch-active'); touchActive = b; }
+      }, { passive: true });
+    }
+    b.addEventListener('click', () => { if (!isTouch) openModal(b); });
+    b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(b); } });
+  });
+}
 
 /* MODAL */
 const modal = document.getElementById('modal');
@@ -1052,11 +953,13 @@ const modal = document.getElementById('modal');
 function openModal(b) {
   const dayName = b.dataset.slotDay;
   const idx = parseInt(b.dataset.slotIdx);
+  const SCHEDULE = window._SCHEDULE;
+  const TYPES = window._TYPES;
   const dayData = SCHEDULE.find(d => d.day === dayName);
   if (!dayData) return;
   const s = dayData.slots[idx];
   const t = TYPES[s.type];
-  const filled = getFilled(s);
+  const filled = s.filled || 0;
   const max = s.max;
 
   document.getElementById('modalIcon').textContent = t.emoji;
@@ -1066,83 +969,28 @@ function openModal(b) {
   document.getElementById('modalDesc').textContent = t.desc;
 
   let stats = '';
-  if (max !== null) {
-    const free = max - (filled || 0);
+  if (max !== null && max !== undefined) {
+    const free = max - filled;
     const ampelColor = free <= 0 ? 'var(--red)' : free === 1 ? 'var(--yellow)' : 'var(--green)';
     stats = `
       <div class="modal-stat"><div class="stat-value">${max}</div><div class="stat-label">Plätze</div></div>
-      <div class="modal-stat"><div class="stat-value">${filled || 0}</div><div class="stat-label">Belegt</div></div>
+      <div class="modal-stat"><div class="stat-value">${filled}</div><div class="stat-label">Belegt</div></div>
       <div class="modal-stat"><div class="stat-value" style="color:${ampelColor}">${free}</div><div class="stat-label">Frei</div></div>`;
   }
   document.getElementById('modalStats').innerHTML = stats;
-
-  document.getElementById('modalTrainer').innerHTML = s.trainer
-    ? `<div class="trainer-row"><strong>🧑‍🏫 Trainer/in:</strong> ${s.trainer}</div>
-       <div class="trainer-row"><strong>🤝 Trainer-Assistent/in:</strong> ${s.assistant || '(Platzhalter)'}</div>`
-    : '';
-
-  /* Kids + Pferde in Gruppen A & B – Abgemeldete bleiben in ihrer Gruppe */
-  let kidsHTML = '';
-  if (s.kids && s.kids.length > 0) {
-    const allKids = s.kids;
-    const half = Math.ceil(allKids.length / 2);
-    const groupA = allKids.slice(0, half);
-    const groupB = allKids.slice(half);
-
-    function renderGroup(name, kids, maxPerGroup) {
-      let html = `<div class="group-block"><div class="group-header">${name}</div><ul class="kids-list">`;
-      kids.forEach(k => {
-        const nameStyle = k.cancelled ? 'text-decoration:line-through; opacity:0.5;' : '';
-        const cancelBadge = k.cancelled ? ' <span class="cancel-badge">abgemeldet</span>' : '';
-        html += `<li>
-          <span class="kid-name" style="${nameStyle}">${k.name}${cancelBadge}</span>
-          <span class="kid-horse">🐎 ${k.horse}</span>
-        </li>`;
-      });
-      /* freie Plätze in der Gruppe */
-      const activeInGroup = kids.filter(k => !k.cancelled).length;
-      const emptySlots = Math.max(0, maxPerGroup - activeInGroup);
-      for (let i = 0; i < emptySlots; i++) {
-        html += `<li class="empty-slot"><span class="kid-name" style="opacity:0.4; font-style:italic;">— freier Platz —</span><span class="kid-horse" style="opacity:0.3;">🐎 —</span></li>`;
-      }
-      html += '</ul></div>';
-      return html;
-    }
-
-    const maxPerGroup = max ? Math.ceil(max / 2) : half;
-    kidsHTML = '<div class="modal-kids"><strong>🐴 Teilnehmer & Pferdeeinteilung:</strong>';
-    kidsHTML += '<div class="groups-container">';
-    kidsHTML += renderGroup('Gruppe A', groupA, maxPerGroup);
-    kidsHTML += renderGroup('Gruppe B', groupB, max ? max - maxPerGroup : groupB.length);
-    kidsHTML += '</div></div>';
-  }
-  document.getElementById('modalKids').innerHTML = kidsHTML;
+  document.getElementById('modalTrainer').innerHTML = '';
+  document.getElementById('modalKids').innerHTML = '';
 
   modal.classList.add('active');
 }
 
 function closeModal() { modal.classList.remove('active'); }
 
-const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-let touchActive = null;
-
-document.querySelectorAll('.course-block').forEach(b => {
-  if (isTouch) {
-    b.addEventListener('touchstart', () => {
-      document.querySelectorAll('.course-block.touch-active').forEach(el => el.classList.remove('touch-active'));
-      if (touchActive === b) { openModal(b); touchActive = null; }
-      else { b.classList.add('touch-active'); touchActive = b; }
-    }, { passive: true });
-  }
-  b.addEventListener('click', () => { if (!isTouch) openModal(b); });
-  b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(b); } });
-});
-
 document.getElementById('modalClose').addEventListener('click', closeModal);
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-/* ═══════ WOCHEN-NAVIGATION (statisch) ═══════ */
+/* ═══════ WOCHEN-NAVIGATION ═══════ */
 let currentWeekOffset = 0;
 
 function getWeekNumber(d) {
@@ -1180,6 +1028,16 @@ function updateWeekLabel() {
 function changeWeek(dir) {
   currentWeekOffset += dir;
   updateWeekLabel();
+}
+
+function goToCurrentWeek() {
+  currentWeekOffset = 0;
+  updateWeekLabel();
+}
+
+// ═══════ INIT ═══════
+renderKursplan();
+updateWeekLabel();
   /* Backend: hier würden die Daten für die neue Woche geladen */
 }
 
