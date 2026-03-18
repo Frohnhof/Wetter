@@ -197,8 +197,6 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  max-width: 900px;
-  margin: 0 auto;
 }
 .day-col {
   background: var(--bg-card);
@@ -386,6 +384,73 @@ body {
 }
 .modal-trainer strong { color: var(--text); }
 
+.modal-kids {
+  margin-top: 0.8rem;
+  padding: 0.8rem;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--text-sub);
+}
+.modal-kids strong { color: var(--text); display: block; margin-bottom: 0.5rem; }
+.kids-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.kids-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.kids-list li:last-child { border-bottom: none; }
+.kid-name { font-weight: 500; color: var(--text); }
+.kid-horse { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
+.cancel-badge {
+  display: inline-block;
+  font-size: 0.58rem;
+  background: var(--red);
+  color: white;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.empty-slot { opacity: 0.6; }
+
+.trainer-row { margin-bottom: 0.3rem; }
+.trainer-row strong { color: var(--text); }
+
+.groups-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+.group-block {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+}
+.group-header {
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.cancelled-section {
+  margin-top: 0.6rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed rgba(0,0,0,0.1);
+}
+.cancelled-section strong { font-size: 0.7rem; color: var(--text-muted); }
+
 /* ═══════ WEEK NAVIGATION ═══════ */
 .week-nav {
   display: flex;
@@ -524,7 +589,7 @@ body {
   .legend-bar { padding: 4px 0; }
   .legend-item { font-size: 6.5pt; }
   .schedule-section { padding: 0 0 4mm; }
-  .schedule-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 4px; max-width: 100%; }
+  .schedule-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 4px; }
   .day-col { border: 1px solid #ddd; box-shadow: none !important; break-inside: avoid; }
   .day-header { padding: 3px; }
   .day-header h3 { font-size: 7pt; }
@@ -539,7 +604,7 @@ body {
   .course-spots { font-size: 5pt; }
   .ampel { width: 6px; height: 6px; }
   .descriptions { padding: 0 0 3mm; }
-  .desc-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 4px; }
+  .desc-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 4px; }
   .desc-card { padding: 5px 6px; border-left-width: 2px; }
   .desc-card h5 { font-size: 6pt; }
   .desc-card p { font-size: 5.5pt; }
@@ -594,7 +659,7 @@ body {
     <div class="header-text">
       <h1>Kursplan Michaelshoven</h1>
       <div class="subtitle">Frohnhof e.V.</div>
-      <div class="semester">Frühjahr 2026 · Standort Michaelshoven</div>
+      <div class="semester">Frühjahr 2026 · Frohnhofstr. 2, 50765 Köln</div>
     </div>
     <div class="header-right">
       <button class="print-btn" onclick="window.print()">🖨️ Drucken / PDF</button>
@@ -632,8 +697,13 @@ body {
 <!-- LEGENDE + AMPEL -->
 <nav class="legend-bar">
   <div class="legend-item"><span class="legend-dot" style="background:var(--c-ponyclub)"></span>Ponyclub</div>
-  <div class="legend-item"><span class="legend-dot" style="background:var(--c-pcmaxi)"></span>PC-Maxi / Longe</div>
-  <div class="legend-item"><span class="legend-dot" style="background:var(--c-kjp)"></span>Therapie / Regenwald</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--c-pcmaxi)"></span>PC-Maxi</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--c-longe)"></span>Longe</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--c-freireiter)"></span>Freireiter</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--c-frteam)"></span>FR Team</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--c-kjp)"></span>KJP / Therapie</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--c-beritt)"></span>Beritt</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--c-springstunde)"></span>Springstunde</div>
   <div class="legend-sep"></div>
   <div class="ampel-legend">
     <span><span class="ampel-dot green"></span> Plätze frei</span>
@@ -655,12 +725,32 @@ body {
       <p>Spielerischer Einstieg ab 4 Jahren. Putzen, Führen, erstes Sitzen. Kleine Gruppen, respektvoller Umgang.</p>
     </div>
     <div class="desc-card" style="border-left-color:var(--c-pcmaxi)">
-      <h5>🏇 PC-Maxi / Longe</h5>
-      <p>Fortgeschrittene Ponyclub-Kinder mit Longenunterricht. Bodenarbeit und freies Reiten.</p>
+      <h5>🏇 PC-Maxi</h5>
+      <p>Fortgeschrittene Ponyclub-Kinder. Bodenarbeit, freies Reiten, erste Bahnfiguren.</p>
+    </div>
+    <div class="desc-card" style="border-left-color:var(--c-longe)">
+      <h5>🔄 Longe</h5>
+      <p>Einzelunterricht an der Longe. Balance, Haltung, Vertrauen. Ideal für Anfänger.</p>
+    </div>
+    <div class="desc-card" style="border-left-color:var(--c-freireiter)">
+      <h5>🌟 Freireiter</h5>
+      <p>Eigenständiges Reiten in der Gruppe. Bahnfiguren, Tempi. Voraussetzung: sicherer Sitz.</p>
+    </div>
+    <div class="desc-card" style="border-left-color:var(--c-frteam)">
+      <h5>🏆 FR Team</h5>
+      <p>Fortgeschrittene Reitergruppe. Dressurlektionen, Geschicklichkeit und Teamarbeit.</p>
     </div>
     <div class="desc-card" style="border-left-color:var(--c-kjp)">
-      <h5>💚 Therapie / Regenwald</h5>
-      <p>Pferdegestützte Förderung in Kooperation mit Projekt Regenwald.</p>
+      <h5>💚 KJP / Therapie</h5>
+      <p>Pferdegestützte therapeutische Förderung mit Fachkräften.</p>
+    </div>
+    <div class="desc-card" style="border-left-color:var(--c-beritt)">
+      <h5>🐎 Beritt</h5>
+      <p>Professionelles Training der Schulpferde und Longenunterricht.</p>
+    </div>
+    <div class="desc-card" style="border-left-color:var(--c-springstunde)">
+      <h5>🏅 Springstunde</h5>
+      <p>Springgymnastik und Parcourstraining für Fortgeschrittene.</p>
     </div>
   </div>
 </section>
@@ -670,7 +760,7 @@ body {
   <div class="contact-card">
     <div class="contact-left">
       <strong>Frohnhof e.V.</strong>
-      Standort Michaelshoven<br>
+      Frohnhofstraße 2 · 50765 Köln<br>
       Erreichbar: Mo, Di, Fr 12:00 – 14:00 Uhr
     </div>
     <div class="contact-right">
@@ -683,7 +773,7 @@ body {
 </section>
 
 <footer class="footer-bar">
-  © 2026 Frohnhof e.V. · Standort Michaelshoven · Alle Angaben ohne Gewähr · Änderungen vorbehalten
+  © 2026 Frohnhof e.V. · Standort Esch · Alle Angaben ohne Gewähr · Änderungen vorbehalten
 </footer>
 
 <!-- MODAL -->
@@ -701,151 +791,206 @@ body {
       <p id="modalDesc"></p>
       <div class="modal-stats" id="modalStats"></div>
       <div class="modal-trainer" id="modalTrainer"></div>
+      <div id="modalKids"></div>
     </div>
   </div>
 </div>
 
 <script>
-const TYPES = {
-  ponyclub:     { emoji:'🐴', label:'Ponyclub',       color:'#6bba70', bg:'rgba(107,186,112,0.10)', desc:'Spielerischer Einstieg ab 4 Jahren. Putzen, Führen, erstes Sitzen.' },
-  pcmaxi:       { emoji:'🏇', label:'PC-Maxi',        color:'#4db6ac', bg:'rgba(77,182,172,0.10)',  desc:'Fortgeschrittene Ponyclub-Kinder. Bodenarbeit, freies Reiten.' },
-  longe:        { emoji:'🔄', label:'Longe',           color:'#64b5f6', bg:'rgba(100,181,246,0.10)', desc:'Einzelunterricht an der Longe. Balance, Haltung, Vertrauen.' },
-  freireiter:   { emoji:'🌟', label:'Freireiter',      color:'#ffb74d', bg:'rgba(255,183,77,0.10)',  desc:'Eigenständiges Reiten in der Gruppe. Bahnfiguren und Tempi.' },
-  frteam:       { emoji:'🏆', label:'FR Team',         color:'#ba68c8', bg:'rgba(186,104,200,0.10)', desc:'Fortgeschrittene Reitergruppe. Dressurlektionen und Teamarbeit.' },
-  kjp:          { emoji:'💚', label:'KJP / Therapie',  color:'#f06292', bg:'rgba(240,98,146,0.10)',  desc:'Pferdegestützte therapeutische Förderung mit Fachkräften.' },
-  beritt:       { emoji:'🐎', label:'Beritt & Longe',  color:'#a1887f', bg:'rgba(161,136,127,0.10)', desc:'Professionelles Training der Schulpferde.' },
-  springstunde: { emoji:'🏅', label:'Springstunde',    color:'#e57373', bg:'rgba(229,115,115,0.10)', desc:'Springgymnastik und Parcourstraining.' },
-  erwachsene:   { emoji:'🧑', label:'Erwachsene',      color:'#90a4ae', bg:'rgba(144,164,174,0.10)', desc:'Reitunterricht für Erwachsene.' }
+// ═══════ SUPABASE CONFIG ═══════
+const SUPABASE_URL = 'https://jktrkwzqtyhhuxsbvvwa.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprdHJrd3pxdHloaHV4c2J2dndhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODM4MDIsImV4cCI6MjA4OTM1OTgwMn0.qxCXhH7huZv2QxzkI4fgWzy_Rnhd7gkm7y8oAuIFC_Q';
+
+// Kurstyp-Farben und Details (Fallback + Ergänzungen)
+const TYPE_EXTRAS = {
+  ponyclub:     { bg:'rgba(107,186,112,0.10)' },
+  pcmaxi:       { bg:'rgba(77,182,172,0.10)' },
+  longe:        { bg:'rgba(100,181,246,0.10)' },
+  freireiter:   { bg:'rgba(255,183,77,0.10)' },
+  frteam:       { bg:'rgba(186,104,200,0.10)' },
+  kjp:          { bg:'rgba(240,98,146,0.10)' },
+  beritt:       { bg:'rgba(161,136,127,0.10)' },
+  springstunde: { bg:'rgba(229,115,115,0.10)' },
+  erwachsene:   { bg:'rgba(144,164,174,0.10)' },
 };
 
-/* Daten aus Stundenplan – belegt/gesamt für Ampel */
-const SCHEDULE = [
-  { day:'Freitag', slots:[
-    { type:'kjp',      time:'14:00 – 15:00', label:'Therapie / Regenwald', max:null, filled:null, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'15:45 – 16:45', max:6, filled:6, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'17:00 – 18:00', max:6, filled:6, trainer:'— (Platzhalter)' },
-  ]},
-  { day:'Samstag', slots:[
-    { type:'ponyclub', time:'10:00 – 11:00', max:6, filled:6, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'11:15 – 12:15', max:6, filled:6, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'12:30 – 13:30', max:6, filled:6, trainer:'— (Platzhalter)' },
-  ]},
-  { day:'Sonntag', slots:[
-    { type:'pcmaxi',   time:'11:00 – 12:00', label:'PC-Maxi / Longe', max:4, filled:4, trainer:'— (Platzhalter)' },
-    { type:'pcmaxi',   time:'12:00 – 13:00', label:'PC-Maxi / Longe', max:4, filled:4, trainer:'— (Platzhalter)' },
-    { type:'ponyclub', time:'13:00 – 14:00', max:4, filled:4, trainer:'— (Platzhalter)' },
-  ]}
-];
+const WOCHENTAGE = ['', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
 
-function getAmpel(filled, max) {
-  if (max === null || filled === null) return '';
-  const free = max - filled;
-  if (free <= 0) return 'red';
-  if (free === 1) return 'yellow';
-  return 'green';
+async function fetchKursplan() {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/v_kursplan?standort=eq.michaelshoven&order=wochentag,uhrzeit_start`,
+    { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+  );
+  if (!res.ok) throw new Error(`API Error: ${res.status}`);
+  return res.json();
 }
 
-function getAmpelText(filled, max) {
-  if (max === null || filled === null) return '';
-  const free = max - filled;
-  if (free <= 0) return 'Ausgebucht';
-  if (free === 1) return '1 Platz frei';
-  return `${free} Plätze frei`;
+function formatTime(start, end) {
+  const s = start ? start.substring(0,5) : '';
+  const e = end ? end.substring(0,5) : '';
+  return e ? `${s} – ${e}` : s;
 }
 
-const grid = document.getElementById('grid');
+function buildSchedule(data) {
+  const TYPES = {};
+  const dayMap = {};
 
-SCHEDULE.forEach(day => {
-  const col = document.createElement('div');
-  col.className = 'day-col';
-  const totalSlots = day.slots.length;
-  col.innerHTML = `
-    <div class="day-header">
-      <h3>${day.day}</h3>
-      <div class="day-count">${totalSlots} Kurs${totalSlots !== 1 ? 'e' : ''}</div>
-    </div>
-    <div class="day-slots">
-      ${day.slots.map(s => {
-        const t = TYPES[s.type];
-        const ampel = getAmpel(s.filled, s.max);
-        const spotsText = s.max ? `${s.filled || 0}/${s.max}` : '';
-        return `
-          <div class="course-block cb-${s.type}"
-               data-type="${s.type}" data-time="${s.time}" data-day="${day.day}"
-               data-max="${s.max || ''}" data-filled="${s.filled || ''}"
-               data-trainer="${s.trainer || ''}" data-label="${s.label || ''}"
-               role="button" tabindex="0">
-            <div class="course-top">
-              <span class="course-time">${s.time}</span>
-              ${ampel ? `<span class="ampel ${ampel}" title="${getAmpelText(s.filled, s.max)}"></span>` : ''}
-            </div>
-            <div class="course-name-row">
-              <span class="course-emoji">${t.emoji}</span>
-              <span class="course-name">${s.label || t.label}</span>
-            </div>
-            ${spotsText ? `<div class="course-spots">${spotsText} belegt</div>` : ''}
-          </div>`;
-      }).join('')}
-    </div>`;
-  grid.appendChild(col);
-});
+  data.forEach(k => {
+    // Build TYPES from DB
+    if (!TYPES[k.typ_kuerzel]) {
+      TYPES[k.typ_kuerzel] = {
+        emoji: k.emoji,
+        label: k.typ_name,
+        color: k.farbe,
+        bg: (TYPE_EXTRAS[k.typ_kuerzel] || {}).bg || 'rgba(0,0,0,0.05)',
+        desc: k.beschreibung
+      };
+    }
+
+    const dayName = WOCHENTAGE[k.wochentag];
+    if (!dayMap[dayName]) dayMap[dayName] = { day: dayName, wochentag: k.wochentag, slots: [] };
+
+    dayMap[dayName].slots.push({
+      type: k.typ_kuerzel,
+      time: formatTime(k.uhrzeit_start, k.uhrzeit_ende),
+      label: k.notizen || null,
+      max: k.max_teilnehmer,
+      filled: k.belegt,
+      ampel: k.ampel,
+      trainer: null,  // Will come from authenticated API later
+      kids: []        // Public version: no kids
+    });
+  });
+
+  // Sort by wochentag
+  return { 
+    TYPES, 
+    SCHEDULE: Object.values(dayMap).sort((a, b) => a.wochentag - b.wochentag)
+  };
+}
+
+// ═══════ RENDER ═══════
+async function renderKursplan() {
+  const grid = document.getElementById('grid');
+  
+  // Show loading state
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);">⏳ Kursplan wird geladen...</div>';
+
+  let data;
+  try {
+    data = await fetchKursplan();
+  } catch (err) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--red);">❌ Fehler beim Laden: ${err.message}</div>`;
+    return;
+  }
+
+  const { TYPES, SCHEDULE } = buildSchedule(data);
+  grid.innerHTML = '';
+
+  SCHEDULE.forEach(day => {
+    const col = document.createElement('div');
+    col.className = 'day-col';
+    const totalSlots = day.slots.length;
+    col.innerHTML = `
+      <div class="day-header">
+        <h3>${day.day}</h3>
+        <div class="day-count">${totalSlots} Kurs${totalSlots !== 1 ? 'e' : ''}</div>
+      </div>
+      <div class="day-slots">
+        ${day.slots.map((s, idx) => {
+          const t = TYPES[s.type];
+          const filled = s.filled || 0;
+          const ampel = s.ampel || '';
+          const ampelText = !s.max ? '' : (s.max - filled <= 0 ? 'Ausgebucht' : s.max - filled === 1 ? '1 Platz frei' : `${s.max - filled} Plätze frei`);
+          const spotsText = s.max ? `${filled}/${s.max}` : '';
+          return `
+            <div class="course-block cb-${s.type}"
+                 data-slot-day="${day.day}" data-slot-idx="${idx}"
+                 role="button" tabindex="0">
+              <div class="course-top">
+                <span class="course-time">${s.time}</span>
+                ${ampel ? `<span class="ampel ${ampel}" title="${ampelText}"></span>` : ''}
+              </div>
+              <div class="course-name-row">
+                <span class="course-emoji">${t.emoji}</span>
+                <span class="course-name">${s.label || t.label}</span>
+              </div>
+              ${spotsText ? `<div class="course-spots">${spotsText} belegt</div>` : ''}
+            </div>`;
+        }).join('')}
+      </div>`;
+    grid.appendChild(col);
+  });
+
+  // Store for modal access
+  window._TYPES = TYPES;
+  window._SCHEDULE = SCHEDULE;
+
+  // Attach event listeners
+  attachCourseListeners();
+}
+
+function attachCourseListeners() {
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  let touchActive = null;
+
+  document.querySelectorAll('.course-block').forEach(b => {
+    if (isTouch) {
+      b.addEventListener('touchstart', () => {
+        document.querySelectorAll('.course-block.touch-active').forEach(el => el.classList.remove('touch-active'));
+        if (touchActive === b) { openModal(b); touchActive = null; }
+        else { b.classList.add('touch-active'); touchActive = b; }
+      }, { passive: true });
+    }
+    b.addEventListener('click', () => { if (!isTouch) openModal(b); });
+    b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(b); } });
+  });
+}
 
 /* MODAL */
 const modal = document.getElementById('modal');
 
 function openModal(b) {
-  const type = b.dataset.type;
-  const t = TYPES[type];
-  const max = b.dataset.max ? parseInt(b.dataset.max) : null;
-  const filled = b.dataset.filled ? parseInt(b.dataset.filled) : null;
+  const dayName = b.dataset.slotDay;
+  const idx = parseInt(b.dataset.slotIdx);
+  const SCHEDULE = window._SCHEDULE;
+  const TYPES = window._TYPES;
+  const dayData = SCHEDULE.find(d => d.day === dayName);
+  if (!dayData) return;
+  const s = dayData.slots[idx];
+  const t = TYPES[s.type];
+  const filled = s.filled || 0;
+  const max = s.max;
 
   document.getElementById('modalIcon').textContent = t.emoji;
   document.getElementById('modalIcon').style.background = t.bg;
-  document.getElementById('modalName').textContent = b.dataset.label || t.label;
-  document.getElementById('modalTime').textContent = `${b.dataset.day} · ${b.dataset.time}`;
+  document.getElementById('modalName').textContent = s.label || t.label;
+  document.getElementById('modalTime').textContent = `${dayName} · ${s.time}`;
   document.getElementById('modalDesc').textContent = t.desc;
 
   let stats = '';
-  if (max !== null) {
-    const free = max - (filled || 0);
+  if (max !== null && max !== undefined) {
+    const free = max - filled;
     const ampelColor = free <= 0 ? 'var(--red)' : free === 1 ? 'var(--yellow)' : 'var(--green)';
     stats = `
-      <div class="modal-stat"><div class="stat-value">${max}</div><div class="stat-label">Plätze gesamt</div></div>
-      <div class="modal-stat"><div class="stat-value">${filled || 0}</div><div class="stat-label">Belegt</div></div>
+      <div class="modal-stat"><div class="stat-value">${max}</div><div class="stat-label">Plätze</div></div>
+      <div class="modal-stat"><div class="stat-value">${filled}</div><div class="stat-label">Belegt</div></div>
       <div class="modal-stat"><div class="stat-value" style="color:${ampelColor}">${free}</div><div class="stat-label">Frei</div></div>`;
   }
   document.getElementById('modalStats').innerHTML = stats;
-
-  const trainer = b.dataset.trainer;
-  document.getElementById('modalTrainer').innerHTML = trainer
-    ? `<strong>Trainer/in:</strong> ${trainer}`
-    : '';
+  document.getElementById('modalTrainer').innerHTML = '';
+  document.getElementById('modalKids').innerHTML = '';
 
   modal.classList.add('active');
 }
 
 function closeModal() { modal.classList.remove('active'); }
 
-const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-let touchActive = null;
-
-document.querySelectorAll('.course-block').forEach(b => {
-  if (isTouch) {
-    b.addEventListener('touchstart', () => {
-      document.querySelectorAll('.course-block.touch-active').forEach(el => el.classList.remove('touch-active'));
-      if (touchActive === b) { openModal(b); touchActive = null; }
-      else { b.classList.add('touch-active'); touchActive = b; }
-    }, { passive: true });
-  }
-  b.addEventListener('click', () => { if (!isTouch) openModal(b); });
-  b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(b); } });
-});
-
 document.getElementById('modalClose').addEventListener('click', closeModal);
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-/* ═══════ WOCHEN-NAVIGATION (statisch) ═══════ */
+/* ═══════ WOCHEN-NAVIGATION ═══════ */
 let currentWeekOffset = 0;
 
 function getWeekNumber(d) {
@@ -883,6 +1028,17 @@ function updateWeekLabel() {
 function changeWeek(dir) {
   currentWeekOffset += dir;
   updateWeekLabel();
+}
+
+function goToCurrentWeek() {
+  currentWeekOffset = 0;
+  updateWeekLabel();
+}
+
+// ═══════ INIT ═══════
+renderKursplan();
+updateWeekLabel();
+  /* Backend: hier würden die Daten für die neue Woche geladen */
 }
 
 function goToCurrentWeek() {
